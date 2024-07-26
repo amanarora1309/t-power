@@ -174,6 +174,7 @@ const Tagging = () => {
         { id: 63, name: "WILL (WILL)" },
         { id: 64, name: "CHKLT (Checklist)" },
         { id: 65, name: "PB (Personal Bond)" },
+        { id: 66, name: "HEAVLOAAGR (Agreement of Supply-(Heavy Load Agreement))" },
     ];
 
 
