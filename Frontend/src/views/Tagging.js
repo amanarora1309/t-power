@@ -19,6 +19,7 @@ import { createPdfFromImages } from "helper/tagging_helper";
 import { getAllFilesData } from "helper/fileData_helper";
 import { DOWNLOAD_ZIP_FILE } from "helper/url_helper";
 import { EXTRACT_PDF } from "helper/url_helper";
+import { url2 } from "helper/url_helper";
 
 
 
@@ -175,6 +176,8 @@ const Tagging = () => {
         { id: 64, name: "CHKLT (Checklist)" },
         { id: 65, name: "PB (Personal Bond)" },
         { id: 66, name: "HEAVLOAAGR (Agreement of Supply-(Heavy Load Agreement))" },
+        { id:67, name:"Seen-on(seen-on)"},
+        { id: 68, name: "Complaint Form"}
     ];
 
 
@@ -447,39 +450,7 @@ const Tagging = () => {
                                         <div>
                                             {images?.length > 0 && (
                                                 <div style={{ overflowY: "scroll", height: "40rem" }}>
-                                                    {/* {images.map((image, index) => (
-
-
-                                                        <div
-                                                            key={index}
-                                                            style={{ position: 'relative', display: 'inline-block', margin: '10px 5px' }}
-                                                        >
-                                                            {selectedImages.includes(image) && (
-                                                                <FontAwesomeIcon
-                                                                    icon={faCheck}
-                                                                    style={{
-                                                                        position: 'absolute',
-                                                                        top: '5px',
-                                                                        left: '5px',
-                                                                        color: 'green',
-                                                                        fontSize: '20px',
-                                                                        zIndex: 1,
-                                                                    }}
-                                                                />
-                                                            )}
-                                                            <img
-                                                                src={`http://localhost:8000${image}`}
-                                                                alt={`Page ${index + 1}`}
-                                                                onClick={() => handleImageClick(image)}
-                                                                style={{
-                                                                    width: '200px',
-                                                                    maxWidth: '600px',
-                                                                    border: "2px solid black",
-                                                                    cursor: 'pointer'
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    ))} */}
+                                                    
 
                                                     {images.map((image, index) => (
                                                         <div
@@ -511,7 +482,7 @@ const Tagging = () => {
                                                                 />
                                                             )}
                                                             <img
-                                                                src={`http://localhost:8000${image}`}
+                                                                src={`${url2} ${image}`}
                                                                 alt={`Page ${index + 1}`}
                                                                 onClick={() => handleImageClick(image)}
                                                                 onDoubleClick={() => handleDoubleClick(image)}
