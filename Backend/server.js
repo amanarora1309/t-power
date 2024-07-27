@@ -8,6 +8,7 @@ import fileDataRoutes from "./routes/fileDataRoutes.js"
 import warehouseRoutes from "./routes/warehouseRoutes.js"; // Import warehouse routes
 import taggingRoutes from "./routes/taggingRoutes.js"
 import analysisRoutes from "./routes/analysisRoutes.js";
+import documentTypeDataRoutes from "./routes/DocumentDataTypeDataRoutes.js";
 import bwipjs from 'bwip-js';
 import FileData from "./models/FileData.js";
 import Warehouse from "./models/warehouse.js";
@@ -39,6 +40,7 @@ app.use("/", warehouseRoutes);
 app.use("/", taggingRoutes);
 app.use("/", taggingRoutes);
 app.use("/", analysisRoutes);
+app.use("/", documentTypeDataRoutes);
 
 
 

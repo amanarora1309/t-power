@@ -19,6 +19,10 @@ export const GET_ALL_FILEDATA = url + "getAllFilesData";
 export const GET_FILE_DETAIL_DATA = url + "getFileDetailData";
 export const GET_FILTER_FILES = url + "getFilterFiles";
 
+export const SAVE_DOCUMENT_TYPE = url + "saveDocumentType";
+export const GET_ALL_DOCUMENT_TYPE = url + "getDocumentTypes";
+
+
 export const PRINT_BARCODE = url + "printBarcode";
 
 export const GET_ANALYSIS_DATA = url + "getAnalysisData";

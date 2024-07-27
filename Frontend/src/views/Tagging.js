@@ -20,6 +20,8 @@ import { getAllFilesData } from "helper/fileData_helper";
 import { DOWNLOAD_ZIP_FILE } from "helper/url_helper";
 import { EXTRACT_PDF } from "helper/url_helper";
 import { url2 } from "helper/url_helper";
+import { saveDocumentType } from "helper/documentType_helper";
+import { getAlldocumentType } from "helper/documentType_helper";
 
 
 
@@ -46,7 +48,9 @@ const Tagging = () => {
     const [modalShow, setModalShow] = useState(false);
     const [date, setDate] = useState("");
     const [confirmModal, setConfirmModal] = useState(false);
-
+    const [addDocumentModal, setAddDocumentModal] = useState(false);
+    const [documentTypeName, setDocumentTypeName] = useState("");
+    const [documentsData, setDocumentsData] = useState([]);
     const fileInputRef = useRef(null);
     const getAllFiles = async () => {
         try {
@@ -65,91 +69,91 @@ const Tagging = () => {
     }, []);
 
 
-    const documentsData = [
-        { id: 1, name: "RF (New Requisition Form)" },
-        { id: 2, name: "RFNC (RF Name Change)" },
-        { id: 3, name: "SR (Solar Requisition)" },
-        { id: 4, name: "PDCRF (Service Removal RF)" },
-        { id: 5, name: "TR (Test Report)" },
-        { id: 6, name: "PB (Personal Bond)" },
-        { id: 7, name: "CHKLT (Checklist)" },
-        { id: 8, name: "SACH (Safety Challan)" },
-        { id: 9, name: "DESNOC (DES NOC)" },
-        { id: 10, name: "DICNOC (DIC NOC)" },
-        { id: 11, name: "FIRENOC (FIRE NOC)" },
-        { id: 12, name: "FIRC (Police FIR)" },
-        { id: 13, name: "RENTA (Rent Receipt & Rent Agreement)" },
-        { id: 14, name: "ATS (Agreement to Sale)" },
-        { id: 15, name: "ANNASS (Agra Nagar Nigam Assessment)" },
-        { id: 16, name: "IB (Indemnity Bond-New Connection)" },
-        { id: 17, name: "IBNC (Indemnity Bond-Name Change)" },
-        { id: 18, name: "ELEC (Election Card/Voter Card)" },
-        { id: 19, name: "RATCD (Ration Card)" },
-        { id: 20, name: "PANP (Pan Card)" },
-        { id: 21, name: "PANCO (Pan card - Company)" },
-        { id: 22, name: "ADHAR (ADHAR CARD)" },
-        { id: 23, name: "PHID (PHOTO ID BY ANY GOVT AGENCY)" },
-        { id: 24, name: "PASS (PASSPORT)" },
-        { id: 25, name: "POA (Power off Attorney)" },
-        { id: 26, name: "DRLEC (DRIVING LICENCE)" },
-        { id: 27, name: "SBA (Statement of Bank Account)" },
-        { id: 28, name: "STN (Sales Tax Number)" },
-        { id: 29, name: "GSTD (GST Declaration)" },
-        { id: 30, name: "GSTIN (GST Identification No.)" },
-        { id: 31, name: "DTHCR (Death Certificate)" },
-        { id: 32, name: "SUCCDE (SUCCESSION DEED)" },
-        { id: 33, name: "LEGLHIE (Legal Hiership)" },
-        { id: 34, name: "BORES (Board Resolution)" },
-        { id: 35, name: "ROC (Certificate from Reg of companies)" },
-        { id: 36, name: "MACERT (MARRIAGE CERTIFICATE)" },
-        { id: 37, name: "LEASE (Lease Deed)" },
-        { id: 38, name: "PARTD (Partnership deed)" },
-        { id: 39, name: "SLDD (Sale Deed)" },
-        { id: 40, name: "GFTDD (Gift Deed)" },
-        { id: 41, name: "COMPLH (Company Letter Head)" },
-        { id: 42, name: "CORRDD (Correction Deed)" },
-        { id: 43, name: "TRUST (Trust Deed)" },
-        { id: 44, name: "PANLT (Panchayat Letter)" },
-        { id: 45, name: "POSLT (Possession Letter)" },
-        { id: 46, name: "RTGS (RTGS Form)" },
-        { id: 47, name: "BANK (BANK DETAILS)" },
-        { id: 48, name: "SDREF (SECURITY Refund Form)" },
-        { id: 49, name: "MOA (Memo. Of Assoc.)" },
-        { id: 50, name: "AOA (Article of Assoc)" },
-        { id: 51, name: "COI (Certificate of Incorporation)" },
-        { id: 52, name: "OTH (Others)" },
-        { id: 53, name: "NOCLL (NOC OF LANDLORD)" },
-        { id: 54, name: "NOCCO (NOC OF CO-OWNER)" },
-        { id: 55, name: "PLAN (Plan of Premises)" },
-        { id: 56, name: "LPLAN (Layout plan)" },
-        { id: 57, name: "BANKPA (BANK PASSBOOK)" },
-        { id: 58, name: "CANCH (CANCELLED CHEQUE)" },
-        { id: 59, name: "AFFID (AFFIDAVIT)" },
-        { id: 60, name: "KHATA (KHATAUNI)" },
-        { id: 61, name: "ALLTLT (ALLOTMENT LETTER)" },
-        { id: 62, name: "ADADEC (ADA MAP DECLARATION)" },
-        { id: 63, name: "NILDUE (Nill Dues AFFIDAVIT on 10rs Stamp Paper For Temporary Connection)" },
-        { id: 64, name: "DOMC (DOMICILE CERTIFICATE)" },
-        { id: 65, name: "TAXR (House Tax Receipt)" },
-        { id: 66, name: "WILL (WILL)" },
-        { id: 67, name: "PCBNOC (Pollution Control Board NOC)" },
-        { id: 68, name: "HEAVLOAAGR (Agreement of Supply (Heavy Load Agreement))" },
-        { id: 69, name: "SOCREG (Society Registration)" },
-        { id: 70, name: "SCHREG (SCHOOL REGISTRATION)" },
-        { id: 71, name: "BDONO (Block Development Office NOC for LMV-5)" },
-        { id: 72, name: "NAGRPAN (NAGAR PANCHAYAT LETTER)" },
-        { id: 73, name: "UPNEDAREG (UPNEDA REGISTRATION FOR solar)" },
-        { id: 74, name: "CRTORD (Court Order)" },
-        { id: 75, name: "LEGDOC (Legal Document)" },
-        { id: 76, name: "SEEN (SEEN ON)" },
-        { id: 77, name: "CAN (CANCELLATION)" },
-        { id: 78, name: "LLC (LLC)" },
-        { id: 79, name: "COMF (COMPLAINT FORM)" },
-        { id: 80, name: "YORL (YORL)" },
-        { id: 81, name: "OTS (OTS SCHEME)" },
-        { id: 82, name: "NAMCORR (NAME CORRECTION SLIP)" },
-        { id: 83, name: "PARSHDLETT (PARSHAD LETTER HEAD)" }
-    ];
+    // const documentsData = [
+    //     { id: 1, name: "RF (New Requisition Form)" },
+    //     { id: 2, name: "RFNC (RF Name Change)" },
+    //     { id: 3, name: "SR (Solar Requisition)" },
+    //     { id: 4, name: "PDCRF (Service Removal RF)" },
+    //     { id: 5, name: "TR (Test Report)" },
+    //     { id: 6, name: "PB (Personal Bond)" },
+    //     { id: 7, name: "CHKLT (Checklist)" },
+    //     { id: 8, name: "SACH (Safety Challan)" },
+    //     { id: 9, name: "DESNOC (DES NOC)" },
+    //     { id: 10, name: "DICNOC (DIC NOC)" },
+    //     { id: 11, name: "FIRENOC (FIRE NOC)" },
+    //     { id: 12, name: "FIRC (Police FIR)" },
+    //     { id: 13, name: "RENTA (Rent Receipt & Rent Agreement)" },
+    //     { id: 14, name: "ATS (Agreement to Sale)" },
+    //     { id: 15, name: "ANNASS (Agra Nagar Nigam Assessment)" },
+    //     { id: 16, name: "IB (Indemnity Bond-New Connection)" },
+    //     { id: 17, name: "IBNC (Indemnity Bond-Name Change)" },
+    //     { id: 18, name: "ELEC (Election Card/Voter Card)" },
+    //     { id: 19, name: "RATCD (Ration Card)" },
+    //     { id: 20, name: "PANP (Pan Card)" },
+    //     { id: 21, name: "PANCO (Pan card - Company)" },
+    //     { id: 22, name: "ADHAR (ADHAR CARD)" },
+    //     { id: 23, name: "PHID (PHOTO ID BY ANY GOVT AGENCY)" },
+    //     { id: 24, name: "PASS (PASSPORT)" },
+    //     { id: 25, name: "POA (Power off Attorney)" },
+    //     { id: 26, name: "DRLEC (DRIVING LICENCE)" },
+    //     { id: 27, name: "SBA (Statement of Bank Account)" },
+    //     { id: 28, name: "STN (Sales Tax Number)" },
+    //     { id: 29, name: "GSTD (GST Declaration)" },
+    //     { id: 30, name: "GSTIN (GST Identification No.)" },
+    //     { id: 31, name: "DTHCR (Death Certificate)" },
+    //     { id: 32, name: "SUCCDE (SUCCESSION DEED)" },
+    //     { id: 33, name: "LEGLHIE (Legal Hiership)" },
+    //     { id: 34, name: "BORES (Board Resolution)" },
+    //     { id: 35, name: "ROC (Certificate from Reg of companies)" },
+    //     { id: 36, name: "MACERT (MARRIAGE CERTIFICATE)" },
+    //     { id: 37, name: "LEASE (Lease Deed)" },
+    //     { id: 38, name: "PARTD (Partnership deed)" },
+    //     { id: 39, name: "SLDD (Sale Deed)" },
+    //     { id: 40, name: "GFTDD (Gift Deed)" },
+    //     { id: 41, name: "COMPLH (Company Letter Head)" },
+    //     { id: 42, name: "CORRDD (Correction Deed)" },
+    //     { id: 43, name: "TRUST (Trust Deed)" },
+    //     { id: 44, name: "PANLT (Panchayat Letter)" },
+    //     { id: 45, name: "POSLT (Possession Letter)" },
+    //     { id: 46, name: "RTGS (RTGS Form)" },
+    //     { id: 47, name: "BANK (BANK DETAILS)" },
+    //     { id: 48, name: "SDREF (SECURITY Refund Form)" },
+    //     { id: 49, name: "MOA (Memo. Of Assoc.)" },
+    //     { id: 50, name: "AOA (Article of Assoc)" },
+    //     { id: 51, name: "COI (Certificate of Incorporation)" },
+    //     { id: 52, name: "OTH (Others)" },
+    //     { id: 53, name: "NOCLL (NOC OF LANDLORD)" },
+    //     { id: 54, name: "NOCCO (NOC OF CO-OWNER)" },
+    //     { id: 55, name: "PLAN (Plan of Premises)" },
+    //     { id: 56, name: "LPLAN (Layout plan)" },
+    //     { id: 57, name: "BANKPA (BANK PASSBOOK)" },
+    //     { id: 58, name: "CANCH (CANCELLED CHEQUE)" },
+    //     { id: 59, name: "AFFID (AFFIDAVIT)" },
+    //     { id: 60, name: "KHATA (KHATAUNI)" },
+    //     { id: 61, name: "ALLTLT (ALLOTMENT LETTER)" },
+    //     { id: 62, name: "ADADEC (ADA MAP DECLARATION)" },
+    //     { id: 63, name: "NILDUE (Nill Dues AFFIDAVIT on 10rs Stamp Paper For Temporary Connection)" },
+    //     { id: 64, name: "DOMC (DOMICILE CERTIFICATE)" },
+    //     { id: 65, name: "TAXR (House Tax Receipt)" },
+    //     { id: 66, name: "WILL (WILL)" },
+    //     { id: 67, name: "PCBNOC (Pollution Control Board NOC)" },
+    //     { id: 68, name: "HEAVLOAAGR (Agreement of Supply (Heavy Load Agreement))" },
+    //     { id: 69, name: "SOCREG (Society Registration)" },
+    //     { id: 70, name: "SCHREG (SCHOOL REGISTRATION)" },
+    //     { id: 71, name: "BDONO (Block Development Office NOC for LMV-5)" },
+    //     { id: 72, name: "NAGRPAN (NAGAR PANCHAYAT LETTER)" },
+    //     { id: 73, name: "UPNEDAREG (UPNEDA REGISTRATION FOR solar)" },
+    //     { id: 74, name: "CRTORD (Court Order)" },
+    //     { id: 75, name: "LEGDOC (Legal Document)" },
+    //     { id: 76, name: "SEEN (SEEN ON)" },
+    //     { id: 77, name: "CAN (CANCELLATION)" },
+    //     { id: 78, name: "LLC (LLC)" },
+    //     { id: 79, name: "COMF (COMPLAINT FORM)" },
+    //     { id: 80, name: "YORL (YORL)" },
+    //     { id: 81, name: "OTS (OTS SCHEME)" },
+    //     { id: 82, name: "NAMCORR (NAME CORRECTION SLIP)" },
+    //     { id: 83, name: "PARSHDLETT (PARSHAD LETTER HEAD)" }
+    // ];
 
 
 
@@ -356,6 +360,51 @@ const Tagging = () => {
         }
     };
 
+    const fetchDocumentTypes = async () => {
+        try {
+            setLoader(true);
+            const data = await getAlldocumentType();
+            setLoader(false)
+            if (data?.success) {
+                console.log(data?.data);
+                setDocumentsData(data?.data);
+            }
+            else {
+                toast.error(data?.message);
+            }
+        } catch (error) {
+            console.error(error);
+            setLoader(false)
+            toast.error("something went wrong");
+        }
+    }
+
+
+    useEffect(() => {
+        fetchDocumentTypes();
+    }, [])
+
+    const handleAddDocumentType = async () => {
+        try {
+            setLoader(true);
+            const data = await saveDocumentType({ documentTypeName });
+            setLoader(false);
+            if (data?.success) {
+                toast.success(data?.message);
+                setDocumentTypeName("");
+                setAddDocumentModal(false);
+                fetchDocumentTypes();
+            }
+            else {
+                toast.error(data?.message);
+            }
+        } catch (error) {
+            console.error(error);
+            setLoader(false)
+            toast.error("something went wrong");
+        }
+    }
+
     return (
         <>
             <NormalHeader />
@@ -371,7 +420,9 @@ const Tagging = () => {
                             <CardHeader className="border-0">
                                 <div className="d-flex justify-content-between">
                                     <h1 className="mt-2">Tag a File</h1>
-
+                                    <Button className="" color="info" type="button" onClick={() => setAddDocumentModal(true)}>
+                                        Add Document Type
+                                    </Button>
                                     <Button className="" color="primary" type="button" onClick={() => setModalShow(true)}>
                                         Download Files
                                     </Button>
@@ -599,6 +650,48 @@ const Tagging = () => {
                 </Modal.Footer>
             </Modal>
 
+
+            {/* Modal for add document type  */}
+            <Modal
+                show={addDocumentModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header >
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Add Document Type
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+
+
+                    <Row className="mb-3">
+                        <label
+                            htmlFor="example-text-input"
+                            className="col-md-2 col-form-label"
+                        >
+                            Name
+                        </label>
+                        <div className="col-md-10">
+                            <input type="text"
+                                className='form-control'
+                                placeholder="Name"
+                                value={documentTypeName}
+                                onChange={(e) => setDocumentTypeName(e.target.value)} />
+                            {!documentTypeName && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
+
+                        </div>
+                    </Row>
+
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button type="button" color="primary" onClick={() => setAddDocumentModal(false)} className="waves-effect waves-light">Close</Button>{" "}
+                    <Button type="button" color="success" onClick={handleAddDocumentType} className="waves-effect waves-light">Add</Button>{" "}
+
+                </Modal.Footer>
+            </Modal>
         </>
     );
 };

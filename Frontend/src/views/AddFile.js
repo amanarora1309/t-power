@@ -41,6 +41,8 @@ const AddFile = () => {
     const [to, setTo] = useState("");
     const [collectionPoint, setCollectionPoint] = useState("");
 
+
+
     const fetchAllFiles = async () => {
         try {
             const data = await getAllFilesData();
@@ -65,7 +67,7 @@ const AddFile = () => {
         { id: 1, name: "Jaipur House" },
         { id: 2, name: "Pratap Pura" },
         { id: 3, name: "Sanjay Palace" },
-        
+
     ];
 
 
@@ -160,6 +162,9 @@ const AddFile = () => {
         }
     }
 
+
+
+
     return (
         <>
             <NormalHeader />
@@ -178,6 +183,7 @@ const AddFile = () => {
 
                                     <div className="d-flex justify-content-between mb-2">
                                         <h3 className="mt-2">Add File</h3>
+
                                         <Button className="" color="primary" type="button" onClick={() => setAllFilesDisplay(true)}>
                                             All Files
                                         </Button>
@@ -197,7 +203,7 @@ const AddFile = () => {
                                                 placeholder="Scan barcode here"
                                                 onChange={handleChange}
                                                 autoFocus // Automatically focus the input field when the component mounts
-                                                style={{color: "black"}}
+                                                style={{ color: "black" }}
                                             />
                                             {!barcode && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                         </div>
@@ -215,8 +221,8 @@ const AddFile = () => {
                                                 className='form-control'
                                                 placeholder="Enter Customer Service Number"
                                                 value={CSANumber}
-                                                onChange={(e) => setCSANumber(e.target.value)} 
-                                                style={{color: "black"}}/>
+                                                onChange={(e) => setCSANumber(e.target.value)}
+                                                style={{ color: "black" }} />
                                             {!CSANumber && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                         </div>
                                     </Row>
@@ -232,30 +238,30 @@ const AddFile = () => {
                                                 className='form-control'
                                                 placeholder="Enter Type of Request"
                                                 value={typeOfRequest}
-                                                onChange={(e) => setTypeOfRequest(e.target.value)} 
-                                                style={{color: "black"}}/>
+                                                onChange={(e) => setTypeOfRequest(e.target.value)}
+                                                style={{ color: "black" }} />
                                             {!typeOfRequest && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                         </div>
                                     </Row>
                                     <Row className="mb-3">
-                                                    <label
-                                                        htmlFor="example-text-input"
-                                                        className="col-md-2 col-form-label"
-                                                    >
-                                                        Collection Point
-                                                    </label>
-                                                    <div className="col-md-10">
-                                                        <Select
-                                                            onChange={(selectedOption) => setCollectionPoint(selectedOption)}
-                                                            options={collectionPointData}
-                                                            getOptionLabel={(option) => option?.name}
-                                                            getOptionValue={(option) => option?.id?.toString()}
-                                                            classNamePrefix="select2-selection"
-                                                            value={collectionPoint}
+                                        <label
+                                            htmlFor="example-text-input"
+                                            className="col-md-2 col-form-label"
+                                        >
+                                            Collection Point
+                                        </label>
+                                        <div className="col-md-10">
+                                            <Select
+                                                onChange={(selectedOption) => setCollectionPoint(selectedOption)}
+                                                options={collectionPointData}
+                                                getOptionLabel={(option) => option?.name}
+                                                getOptionValue={(option) => option?.id?.toString()}
+                                                classNamePrefix="select2-selection"
+                                                value={collectionPoint}
 
-                                                        />
-                                                    </div>
-                                                </Row>
+                                            />
+                                        </div>
+                                    </Row>
                                     <Row className="mb-3">
                                         <label
                                             htmlFor="example-text-input"
@@ -268,8 +274,8 @@ const AddFile = () => {
                                                 className='form-control'
                                                 placeholder="Enter Number of Pages"
                                                 value={noOfPages}
-                                                onChange={(e) => setNoOfPages(e.target.value)} 
-                                                style={{color: "black"}}/>
+                                                onChange={(e) => setNoOfPages(e.target.value)}
+                                                style={{ color: "black" }} />
                                             {!noOfPages && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                         </div>
                                     </Row>
@@ -285,7 +291,7 @@ const AddFile = () => {
                                                 className='form-control'
                                                 placeholder="Enter Date of Application"
                                                 value={dateOfApplication}
-                                                style={{color: "black"}}
+                                                style={{ color: "black" }}
                                                 onChange={(e) => setDateOfApplication(e.target.value)} />
                                             {!dateOfApplication && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                         </div>
@@ -446,6 +452,8 @@ const AddFile = () => {
 
                 </Modal.Footer>
             </Modal>
+
+
 
         </>
     );

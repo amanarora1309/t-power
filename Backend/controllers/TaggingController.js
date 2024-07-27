@@ -99,25 +99,12 @@ export const extractPdfController = async (req, res) => {
             const imagePath = imageFiles[0]; // Assuming you want to read the barcode from the first page
             console.log(imagePath);
 
-            readBarcodeFromImage(imagePath)
-                .then((barcode) => {
-                    console.log('Barcode:', barcode);
-                    res.status(200).json({
-                        success: true,
-                        barcode: barcode,
-                        message: 'PDF converted to images',
-                        images: imageUrls,
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    res.status(200).json({
-                        success: true,
-                        message: 'Error in Reading barcode.',
-                        error: error.message,
-                        images: imageUrls,
-                    });
-                });
+            return res.status(200).json({
+                success: true,
+                message: 'PDF converted to images',
+                images: imageUrls,
+            });
+
         });
 
     } catch (error) {
