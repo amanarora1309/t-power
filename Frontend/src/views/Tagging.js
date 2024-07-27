@@ -45,6 +45,7 @@ const Tagging = () => {
     const [selectedBarcode, setSelectedBarcode] = useState("");
     const [modalShow, setModalShow] = useState(false);
     const [date, setDate] = useState("");
+    const [confirmModal, setConfirmModal] = useState(false);
 
     const fileInputRef = useRef(null);
     const getAllFiles = async () => {
@@ -208,7 +209,7 @@ const Tagging = () => {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSave = async () => {
+    const handleSave = async (requestCount) => {
         try {
             const imageNames = selectedImages;
             const csa = selectedCSA.CSA;
@@ -216,17 +217,20 @@ const Tagging = () => {
             const fileDataId = selectedCSA.id;
             setLoader(true);
             console.log(selectedCSA)
-            const data = await createPdfFromImages({ imageNames, document, csa, fileDataId });
+            const data = await createPdfFromImages({ imageNames, document, csa, fileDataId, requestCount });
+            setConfirmModal(false);
             setLoader(false);
             if (data?.success) {
                 toast.success(data?.message);
                 SetDocumentType(null);
                 removeSelectedImages();
             }
+            else if (data?.message == "File Already exists of this document") {
+                setConfirmModal(true);
+            }
             else {
                 toast.error(data?.message);
             }
-            console.log(data);
         } catch (error) {
             console.log(error);
             setLoader(false);
@@ -253,12 +257,26 @@ const Tagging = () => {
         setSelectedCSA(data[0])
     }
 
+    const findBarcode = (fileName) => {
+        for (let a of CSAData) {
+            if (a.barcode == fileName) {
+                setSelectedBarcode(a);
+                setSelectedCSA(a);
+            }
+        }
+    }
 
 
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
 
         setFile(selectedFile);
+        let name = e.target.files[0]?.name
+        if (name) {
+
+            let newFilename = name.replace(".pdf", "");
+            findBarcode(newFilename);
+        }
 
         const formData = new FormData();
         formData.append('pdf', e.target.files[0]);
@@ -503,7 +521,7 @@ const Tagging = () => {
 
                                                 <div className="functions mt-2 d-flex justify-content-end">
 
-                                                    <Button className="" color={pageCheck ? 'success' : 'light'} onClick={handleSave} type="button" disabled={!pageCheck}>
+                                                    <Button className="" color={pageCheck ? 'success' : 'light'} onClick={() => handleSave(1)} type="button" disabled={!pageCheck}>
                                                         Save
                                                     </Button>
                                                 </div>
@@ -558,6 +576,25 @@ const Tagging = () => {
                 <Modal.Footer>
                     <Button type="button" color="primary" onClick={() => setModalShow(false)} className="waves-effect waves-light">Close</Button>{" "}
                     <Button type="button" color="success" onClick={handleDownloadDataFile} className="waves-effect waves-light">Download</Button>{" "}
+
+                </Modal.Footer>
+            </Modal>
+
+            <Modal
+                show={confirmModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header >
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        File is Already Exists with this Document name
+                    </Modal.Title>
+                </Modal.Header>
+
+                <Modal.Footer>
+                    <Button type="button" color="primary" onClick={() => setConfirmModal(false)} className="waves-effect waves-light">Cancel</Button>{" "}
+                    <Button type="button" color="success" onClick={() => handleSave(2)} className="waves-effect waves-light">Append</Button>{" "}
 
                 </Modal.Footer>
             </Modal>

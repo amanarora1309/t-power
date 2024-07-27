@@ -50,14 +50,14 @@ export const extractPdfController = async (req, res) => {
     try {
         const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
 
-        console
-        const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
+        // console
+        // const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
 
-        return res.status(200).json({
-            success: true,
-            message: 'Error in Reading barcode.',
-            images: testUrls,
-        });
+        // return res.status(200).json({
+        //     success: true,
+        //     message: 'Error in Reading barcode.',
+        //     images: testUrls,
+        // });
         // Check if file exists
         if (!fs.existsSync(filePath)) {
             return res.status(400).json({ error: 'File does not exist' });
@@ -237,7 +237,7 @@ export const extractPdfController = async (req, res) => {
 
 export const convertImageToPdfController = async (req, res) => {
     try {
-        const { imageNames, csa, document, fileDataId } = req.body;
+        const { imageNames, csa, document, fileDataId, requestCount } = req.body;
 
         if (!Array.isArray(imageNames) || imageNames.length === 0) {
             return res.status(400).json({ success: false, message: "Select at least one document", error: 'No images provided' });
@@ -261,6 +261,10 @@ export const convertImageToPdfController = async (req, res) => {
             fs.mkdirSync(outputDir, { recursive: true });
         }
 
+        console.log("exists or not ", fs.existsSync(pdfPath));
+        if (fs.existsSync(pdfPath) && requestCount == 1) {
+            return res.status(200).json({ success: false, message: "File Already exists of this document" });
+        }
         const pdfWriter = fs.existsSync(pdfPath) ?
             hummus.createWriterToModify(pdfPath, { modifiedFilePath: `${pdfPath}.temp` }) :
             hummus.createWriter(pdfPath);
