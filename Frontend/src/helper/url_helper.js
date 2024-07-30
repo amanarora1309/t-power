@@ -1,12 +1,12 @@
-const url = "http://192.168.0.2:8000/"
-export const url2 = "http://192.168.0.2:8000"
+// const url = "http://192.168.0.2:8000/"
+// export const url2 = "http://192.168.0.2:8000"
 
-// const url = "http://localhost:8000/"
-// export const url2 = "http://localhost:8000"
+const url = "http://localhost:8000/"
+export const url2 = "http://localhost:8000"
 
 
 
-export const CREATE_USER = url + "createUser"
+export default url + "createUser"
 export const UPDATE_USER = url + "updateUser/"
 export const GET_USERS = url + "getAllUsers"
 export const LOGIN = url + "Login"

@@ -50,14 +50,13 @@ export const extractPdfController = async (req, res) => {
     try {
         const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
 
-        // console
-        // const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
+        const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
 
-        // return res.status(200).json({
-        //     success: true,
-        //     message: 'Error in Reading barcode.',
-        //     images: testUrls,
-        // });
+        return res.status(200).json({
+            success: true,
+            message: 'Error in Reading barcode.',
+            images: testUrls,
+        });
         // Check if file exists
         if (!fs.existsSync(filePath)) {
             return res.status(400).json({ error: 'File does not exist' });
@@ -130,110 +129,7 @@ export const extractPdfController = async (req, res) => {
     }
 };
 
-// export const convertImageToPdfController = async (req, res) => {
-//     try {
-//         const { imageNames, csa, document, fileDataId } = req.body; // Expecting an array of image names
 
-//         if (!Array.isArray(imageNames) || imageNames.length === 0) {
-//             return res.status(400).json({ success: false, message: "Select at least one document", error: 'No images provided' });
-//         }
-//         if (!csa) {
-//             return res.status(400).json({ success: false, message: 'CSA is required' });
-//         }
-//         if (!document) {
-//             return res.status(400).json({ success: false, message: "document is required" });
-//         }
-//         if (!fileDataId) {
-//             return res.status(400).json({ success: false, message: "File Data Id is required" });
-//         }
-
-//         const currentDate = new Date().toISOString().split('T')[0]; // Get the current date in YYYY-MM-DD format
-//         // const outputDir = path.join(__dirname, '..', 'pdfs', currentDate, csa);
-//         const outputDir = path.join(__dirname, '..', 'pdfs', currentDate, csa);
-//         console.log(outputDir)
-//         const pdfFileName = `${document}_${currentDate}_${csa}.pdf`; // Unique name for the PDF
-//         const pdfPath = path.join(outputDir, pdfFileName);
-
-//         // Ensure the directory exists
-//         if (!fs.existsSync(outputDir)) {
-//             fs.mkdirSync(outputDir, { recursive: true });
-//         }
-
-//         const doc = new PDFDocument();
-//         const writeStream = fs.createWriteStream(pdfPath);
-
-//         // Pipe the PDF into a file
-//         doc.pipe(writeStream);
-
-//         let imagesAdded = false;
-
-//         try {
-//             for (const imageName of imageNames) {
-//                 const imagePath = path.join(__dirname, '..', imageName);
-//                 console.log(`Processing image: ${imagePath}`);
-
-//                 await new Promise((resolve, reject) => {
-//                     fs.access(imagePath, fs.constants.F_OK, (err) => {
-//                         if (err) {
-//                             console.error(`Image not found: ${imageName}`);
-//                             reject(new Error(`Image not found: ${imageName}`));
-//                             return;
-//                         }
-
-//                         if (!imagesAdded) {
-//                             imagesAdded = true; // The first image will start the document
-//                         } else {
-//                             doc.addPage(); // Add a new page for subsequent images
-//                         }
-
-//                         doc.image(imagePath, { fit: [500, 700], align: 'center', valign: 'center' });
-//                         console.log(`Added image to PDF: ${imageName}`);
-//                         resolve(); // Resolve after processing the image
-//                     });
-//                 });
-//             }
-
-//             if (imagesAdded) {
-//                 doc.end();
-//             } else {
-//                 throw new Error('No valid images were added to the PDF');
-//             }
-
-//             writeStream.on('finish', async () => {
-
-//                 await Tagging.create({
-//                     documentName: document,
-//                     pdfFileName: pdfFileName,
-//                     fileDataId: fileDataId
-//                 });
-//                 res.json({
-//                     success: true,
-//                     message: 'PDF created and stored successfully',
-//                     pdfUrl: path.join('/pdfs', pdfFileName), // URL to access the PDF
-//                 });
-//             });
-
-//             writeStream.on('error', (err) => {
-//                 console.error('Error writing PDF file:', err);
-//                 res.status(500).json({ success: false, message: 'Failed to create PDF', error: 'Failed to create PDF' });
-//             });
-//         } catch (error) {
-//             console.error('Error processing images:', error);
-//             // Delete the partially created PDF file
-//             if (fs.existsSync(pdfPath)) {
-//                 fs.unlinkSync(pdfPath);
-//             }
-//             res.status(500).json({ success: false, message: error.message, error: error.message });
-//         }
-//     } catch (error) {
-//         console.log(error);
-//         res.status(500).json({
-//             success: false,
-//             message: 'Failed to create PDF',
-//             error: error.message
-//         });
-//     }
-// }
 
 export const convertImageToPdfController = async (req, res) => {
     try {
@@ -251,10 +147,16 @@ export const convertImageToPdfController = async (req, res) => {
         if (!fileDataId) {
             return res.status(400).json({ success: false, message: "File Data Id is required" });
         }
-
+        const documentName = document.split(' ')[0];
         const currentDate = new Date().toISOString().split('T')[0];
+        const currentDate2 = new Date();
+        const year = currentDate2.getFullYear();
+        const month = String(currentDate2.getMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(currentDate2.getDate()).padStart(2, '0');
+
+        const formattedDate = `${year}${month}${day}`;
         const outputDir = path.join(__dirname, '..', 'pdfs', currentDate, csa);
-        const pdfFileName = `${document}_${currentDate}_${csa}.pdf`;
+        const pdfFileName = `${documentName}_${formattedDate}_${csa}.pdf`;
         const pdfPath = path.join(outputDir, pdfFileName);
 
         if (!fs.existsSync(outputDir)) {
