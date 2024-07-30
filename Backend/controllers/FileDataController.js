@@ -29,14 +29,11 @@ export const saveFileDataController = async (req, res) => {
     }
 
     try {
-        let reason = 1;
-        // Check if the barcode already exists in the database
-        let fileData = await FileData.findOne({ where: { CSA: CSA } });
+        
 
-        if (!fileData) {
-            reason = 2;
-            fileData = await FileData.findOne({ where: { barcode: barcode } });
-        }
+    
+            let fileData = await FileData.findOne({ where: { barcode: barcode } });
+        
 
         if (!fileData) {
             // Save the barcode CSA to the database
@@ -57,12 +54,9 @@ export const saveFileDataController = async (req, res) => {
             }
         }
 
-        if (reason == 1) {
-            res.status(409).json({ success: false, message: "Barcode already exists" })
-        }
-        else {
-            res.status(409).json({ success: false, message: "CSA Number already exists" })
-        }
+        
+        return res.status(409).json({ success: false, message: "Barcode already exists" })
+        
 
     } catch (error) {
         console.error('Error generating barcode:', error);

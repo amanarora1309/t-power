@@ -5,7 +5,7 @@ const FileData = sequelize.define("FileData", {
     CSA: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
+        unique: false
     },
     barcode: {
         type: DataTypes.STRING,

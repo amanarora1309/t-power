@@ -54,7 +54,7 @@ sequelize.sync({ force: false }).then(async () => {
     const adminUser = await User.findOne({ where: { email: "admin@gmail.com" } });
     const hashedPassword = await hashPassword("123456");
     if (!adminUser) {
-        await User.create({
+        await User.create({ 
             userName: "admin",
             mobile: "1234567890",
             email: "admin@gmail.com",
