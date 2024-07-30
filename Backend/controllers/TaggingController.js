@@ -50,13 +50,13 @@ export const extractPdfController = async (req, res) => {
     try {
         const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
 
-        const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
+        // const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
 
-        return res.status(200).json({
-            success: true,
-            message: 'Error in Reading barcode.',
-            images: testUrls,
-        });
+        // return res.status(200).json({
+        //     success: true,
+        //     message: 'Error in Reading barcode.',
+        //     images: testUrls,
+        // });
         // Check if file exists
         if (!fs.existsSync(filePath)) {
             return res.status(400).json({ error: 'File does not exist' });
@@ -96,27 +96,13 @@ export const extractPdfController = async (req, res) => {
             const imageUrls = imageFiles.map(file => path.join('/images', uniqueDirName, path.basename(file)));
 
             const imagePath = imageFiles[0]; // Assuming you want to read the barcode from the first page
-            console.log(imagePath);
 
-            readBarcodeFromImage(imagePath)
-                .then((barcode) => {
-                    console.log('Barcode:', barcode);
-                    res.status(200).json({
-                        success: true,
-                        barcode: barcode,
-                        message: 'PDF converted to images',
-                        images: imageUrls,
-                    });
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                    res.status(200).json({
-                        success: true,
-                        message: 'Error in Reading barcode.',
-                        error: error.message,
-                        images: imageUrls,
-                    });
-                });
+            return res.status(200).json({
+                success: true,
+                message: 'PDF converted to images',
+                images: imageUrls,
+            });
+
         });
 
     } catch (error) {
