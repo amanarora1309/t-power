@@ -1,12 +1,12 @@
 import React, { useState } from 'react'
 import { Button, Card, CardHeader, DropdownItem, DropdownMenu, DropdownToggle, Modal, Row, Table, UncontrolledDropdown } from 'reactstrap'
-import { format } from 'date-fns';
+import { format, setDate } from 'date-fns';
 import Select from "react-select"
 import { toast } from 'react-toastify';
 import { getFilterFilesData } from 'helper/fileData_helper';
 import { getFileDetailData } from 'helper/fileData_helper';
 
-const AllFilesTable = ({ files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal }) => {
+const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, setTypeOfRequest, setNoOfPages, setDateOfApplication, setBarcode, setCollectionPoint, files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal, setUpdateModal }) => {
     const [selectedDays, setSelectedDays] = useState("");
     const [filterFiles, setFilterFiles] = useState([]);
 
@@ -52,6 +52,34 @@ const AllFilesTable = ({ files, setFiles, setLoader, setModalShow, setFileDetail
                 setFileDetailData({ fileData: d, tagging: data?.result?.tagging, warehouse: data?.result?.warehouse });
                 setModalShow(true);
             }
+
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message);
+        }
+    }
+
+    const handleEditRowClick = async (d) => {
+        try {
+            setSelectedFileId(d.id);
+            setUpdateModal(true)
+            setCSANumber(d?.CSA);
+            setBarcode(d?.barcode);
+            setTypeOfRequest(d?.typeOfRequest);
+            setNoOfPages(d?.noOfPages)
+
+            const dateStr = d.dateOfApplication;
+            const date = new Date(dateStr);
+            // Format the date as yyyy-mm-dd
+            const formattedDate = date.toISOString().split('T')[0];
+            setDateOfApplication(formattedDate)
+
+            console.log("dateOfApplication ", d.dateOfApplication)
+            collectionPointData.map((data) => {
+                if (data.name == d.collectionPoint) {
+                    setCollectionPoint(data);
+                }
+            })
 
         } catch (error) {
             console.log(error);
@@ -105,7 +133,7 @@ const AllFilesTable = ({ files, setFiles, setLoader, setModalShow, setFileDetail
                                 {filterFiles.length > 0 ?
                                     filterFiles?.map((d, i) => (
                                         <>
-                                            <tr key={i} onClick={() => handleRowClick(d)} style={{ cursor: "pointer" }}>
+                                            <tr key={i} style={{ cursor: "pointer" }}>
                                                 <td>{i + 1}</td>
 
                                                 <td>{d.CSA}</td>
@@ -133,13 +161,15 @@ const AllFilesTable = ({ files, setFiles, setLoader, setModalShow, setFileDetail
                                                         <DropdownMenu className="dropdown-menu-arrow" right>
                                                             <DropdownItem
                                                                 href="#pablo"
+                                                                onClick={() => handleEditRowClick(d)}
                                                             >
                                                                 Edit
                                                             </DropdownItem>
                                                             <DropdownItem
                                                                 href="#pablo"
+                                                                onClick={() => handleRowClick(d)}
                                                             >
-                                                                Delete
+                                                                View
                                                             </DropdownItem>
 
                                                         </DropdownMenu>
@@ -151,7 +181,7 @@ const AllFilesTable = ({ files, setFiles, setLoader, setModalShow, setFileDetail
                                     :
                                     files?.map((d, i) => (
                                         <>
-                                            <tr key={i} onClick={() => handleRowClick(d)} style={{ cursor: "pointer" }}>
+                                            <tr key={i} style={{ cursor: "pointer" }}>
                                                 <td>{i + 1}</td>
 
                                                 <td>{d.CSA}</td>
@@ -179,13 +209,15 @@ const AllFilesTable = ({ files, setFiles, setLoader, setModalShow, setFileDetail
                                                         <DropdownMenu className="dropdown-menu-arrow" right>
                                                             <DropdownItem
                                                                 href="#pablo"
+                                                                onClick={() => handleEditRowClick(d)}
                                                             >
                                                                 Edit
                                                             </DropdownItem>
                                                             <DropdownItem
                                                                 href="#pablo"
+                                                                onClick={() => handleRowClick(d)}
                                                             >
-                                                                Delete
+                                                                View
                                                             </DropdownItem>
 
                                                         </DropdownMenu>

@@ -20,6 +20,7 @@ import { getAllFilesData } from "helper/fileData_helper";
 import { DOWNLOAD_ZIP_FILE } from "helper/url_helper";
 import { EXTRACT_PDF } from "helper/url_helper";
 import { url2 } from "helper/url_helper";
+import { createPdfFromImagesReplace } from "helper/tagging_helper";
 
 
 
@@ -227,6 +228,31 @@ const Tagging = () => {
             }
             else if (data?.message == "File Already exists of this document") {
                 setConfirmModal(true);
+            }
+            else {
+                toast.error(data?.message);
+            }
+        } catch (error) {
+            console.log(error);
+            setLoader(false);
+            toast.error(error?.response?.data?.message);
+        }
+
+    };
+    const handleReplace = async () => {
+        try {
+            const imageNames = selectedImages;
+            const csa = selectedCSA.CSA;
+            const document = documentType.name
+            const fileDataId = selectedCSA.id;
+            setLoader(true);
+            const data = await createPdfFromImagesReplace({ imageNames, document, csa, fileDataId, });
+            setConfirmModal(false);
+            setLoader(false);
+            if (data?.success) {
+                toast.success(data?.message);
+                SetDocumentType(null);
+                removeSelectedImages();
             }
             else {
                 toast.error(data?.message);
@@ -594,6 +620,7 @@ const Tagging = () => {
 
                 <Modal.Footer>
                     <Button type="button" color="primary" onClick={() => setConfirmModal(false)} className="waves-effect waves-light">Cancel</Button>{" "}
+                    <Button type="button" color="info" onClick={() => handleReplace()} className="waves-effect waves-light">Replace</Button>{" "}
                     <Button type="button" color="success" onClick={() => handleSave(2)} className="waves-effect waves-light">Append</Button>{" "}
 
                 </Modal.Footer>

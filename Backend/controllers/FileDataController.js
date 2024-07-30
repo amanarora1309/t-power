@@ -29,11 +29,11 @@ export const saveFileDataController = async (req, res) => {
     }
 
     try {
-        
 
-    
-            let fileData = await FileData.findOne({ where: { barcode: barcode } });
-        
+
+
+        let fileData = await FileData.findOne({ where: { barcode: barcode } });
+
 
         if (!fileData) {
             // Save the barcode CSA to the database
@@ -54,15 +54,64 @@ export const saveFileDataController = async (req, res) => {
             }
         }
 
-        
+
         return res.status(409).json({ success: false, message: "Barcode already exists" })
-        
+
 
     } catch (error) {
         console.error('Error generating barcode:', error);
         res.status(500).json({ success: false, message: 'Error in saving file' });
     }
 };
+export const UpdateFileDataController = async (req, res) => {
+    const { CSA, noOfPages, typeOfRequest, dateOfApplication, barcode, collPoint, selectedFileId } = req.body;
+
+    if (!CSA) {
+        return res.status(400).json({ success: false, message: 'CSA is required' });
+    }
+    if (!noOfPages) {
+        return res.status(400).json({ success: false, message: 'No of pages is required' });
+    }
+    if (!typeOfRequest) {
+        return res.status(400).json({ success: false, message: 'Type of request is required' });
+    }
+    if (!dateOfApplication) {
+        return res.status(400).json({ success: false, message: 'Date of application is required' });
+    }
+    if (!barcode) {
+        return res.status(400).json({ success: false, message: 'Barcode is required' });
+    }
+    if (!collPoint) {
+        return res.status(400).json({ success: false, message: 'Collection point is required' });
+    }
+
+    try {
+        let fileData = await FileData.findOne({ where: { id: selectedFileId } });
+
+        if (!fileData) {
+            // Create a new record if it doesn't exist
+
+            return res.status(404).json({ success: false, message: 'File not found' });
+        } else {
+            // Update the existing record
+            await FileData.update({
+                barcode,
+                CSA,
+                noOfPages,
+                typeOfRequest,
+                dateOfApplication,
+                collectionPoint: collPoint,
+                updateAt: new Date() // Use new Date() for current timestamp
+            }, {
+                where: { id: selectedFileId }
+            });
+            return res.status(200).json({ success: true, message: 'File updated successfully' });
+        }
+    } catch (error) {
+        console.error('Error processing file data:', error);
+        return res.status(500).json({ success: false, message: 'Error processing file data' });
+    }
+}
 
 export const getAllFilesDataController = async (req, res) => {
     try {

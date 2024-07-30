@@ -1,8 +1,8 @@
-const url = "http://192.168.0.2:8000/"
-export const url2 = "http://192.168.0.2:8000"
+// const url = "http://192.168.0.2:8000/"
+// export const url2 = "http://192.168.0.2:8000"
 
-// const url = "http://localhost:8000/"
-// export const url2 = "http://localhost:8000"
+const url = "http://localhost:8000/"
+export const url2 = "http://localhost:8000"
 
 
 
@@ -15,6 +15,7 @@ export const GET_USER_ROLES = url + "GetUserRole"
 
 
 export const SAVE_FILE_DATA = url + "saveFileData";
+export const UPDATE_FILE_DATA = url + "updateFileData";
 export const GET_ALL_FILEDATA = url + "getAllFilesData";
 export const GET_FILE_DETAIL_DATA = url + "getFileDetailData";
 export const GET_FILTER_FILES = url + "getFilterFiles";
@@ -35,6 +36,7 @@ export const GET_FILE_DATA_FROM_BARCODE = url + "getFileDataFromBarcode"
 
 
 export const CREATE_PDF_FROM_IMAGES = url + "convertImagesToPdf";
+export const CREATE_PDF_FROM_IMAGES_REPLACE = url + "convertImagesToPdfReplace";
 
 
 
