@@ -38,21 +38,25 @@ export const downloadDataCsv = async (req, res) => {
         // Parse the dates from the request body
         const fromDate = new Date(from);
         const toDate = new Date(to);
-
+        toDate.setUTCHours(23, 59, 59, 999);
+        console.log(fromDate)
+        console.log(toDate)
         if (isNaN(fromDate) || isNaN(toDate)) {
-            return res.status(400).json({ error: 'Invalid date range' });
+            return res.status(400).json({ success: false, message: 'Invalid date range' });
         }
 
         // Ensure the dates are in the correct order
         if (fromDate > toDate) {
-            return res.status(400).json({ error: '"from" date should be earlier than "to" date' });
+            return res.status(400).json({ success: false, message: '"from" date should be earlier than "to" date' });
         }
+
 
         // Fetch FileData within the date range
         const fileData = await FileData.findAll({
             where: {
                 createdAt: {
-                    [Op.between]: [fromDate, toDate]
+                    [Op.gte]: fromDate,
+                    [Op.lte]: toDate
                 }
             }
         });
@@ -61,8 +65,7 @@ export const downloadDataCsv = async (req, res) => {
             const tagging = await Tagging.findAll({ where: { fileDataId: file.id } });
             const filteredTagging = filterTaggingData(tagging);
             const warehouse = await Warehouse.findAll({ where: { fileDataId: file.id } });
-
-            return { fileData: file, tagging: filteredTagging, warehouse: warehouse };
+            return { fileData: file, tagging: tagging, warehouse: warehouse };
         }));
 
         if (fileDataList.length === 0) {
@@ -97,7 +100,7 @@ export const downloadDataCsv = async (req, res) => {
 
 export const generateExcelFile = async (data) => {
     const workbook = xlsx.utils.book_new();
-    
+
     // Prepare a single sheet with multiple rows
     const sheetData = [];
 
@@ -120,7 +123,6 @@ export const generateExcelFile = async (data) => {
         let taggingDocuments = "";
         let a = entry.tagging.map((d) => {
             taggingDocuments += d.documentName + ", "
-            console.log("fdfjdkfjkd ---> ", taggingDocuments)
         });
         console.log(taggingDocuments)
         // Add fileData information

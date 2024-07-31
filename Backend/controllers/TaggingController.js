@@ -23,7 +23,7 @@ const __dirname = path.dirname(__filename);
 function convertPDFToImages(pdfPath, outputDir, options = {}, callback) {
     const outputPrefix = path.join(outputDir, 'page');
     const format = options.format || 'png';
-    const resolution = options.resolution || 72;
+    const resolution = options.resolution || 90;
 
     // Escape the file paths
     const escapedPdfPath = `"${pdfPath.replace(/"/g, '\\"')}"`;
@@ -51,13 +51,13 @@ export const extractPdfController = async (req, res) => {
     try {
         const filePath = path.join(__dirname, '..', 'uploads', req.file.filename);
 
-        const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
+        // const testUrls = ["/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-01.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-02.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-03.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-07.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-08.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-09.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-10.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-11.png", "/images/7a3a4f44-bbf5-462c-a78d-2e0e125aafb8/page-12.png"]
 
-        return res.status(200).json({
-            success: true,
-            message: 'Error in Reading barcode.',
-            images: testUrls,
-        });
+        // return res.status(200).json({
+        //     success: true,
+        //     message: 'Error in Reading barcode.',
+        //     images: testUrls,
+        // });
         // Check if file exists
         if (!fs.existsSync(filePath)) {
             return res.status(400).json({ error: 'File does not exist' });
@@ -78,7 +78,7 @@ export const extractPdfController = async (req, res) => {
 
         const options = {
             format: 'png',
-            resolution: 72,
+            resolution: 90,
         };
 
         convertPDFToImages(filePath, outputDir, options, (error, files) => {
@@ -334,7 +334,7 @@ export const convertImageToPdfReplaceController = async (req, res) => {
             await createPdfWithImages(imageNames, pdfPath);
 
             // Compress the PDF
-            const compressedPdfPath = await compressPdf(pdfPath, pdfPath);
+            await compressPdf(pdfPath, pdfPath);
 
             // Create a record in the database
             await Tagging.create({

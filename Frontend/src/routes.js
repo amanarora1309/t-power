@@ -33,6 +33,7 @@ import Booklet24Page from "views/Booklet24Page";
 import Warehouse from "views/Warehouse";
 import Tagging from "views/Tagging";
 import AddFile from "views/AddFile";
+import Maintainance from "views/Maintainance";
 
 
 
@@ -81,6 +82,13 @@ var routes = [
     name: "User Managment",
     icon: "ni ni-circle-08 text-info",
     component: <UserManagment />,
+    layout: "/admin",
+  }] : []),
+  ...(access?.maintainanceAccess ? [{
+    path: "/maintainance",
+    name: "Maintainance",
+    icon: "ni ni-controller text-primary",
+    component: <Maintainance />,
     layout: "/admin",
   }] : []),
 

@@ -185,9 +185,9 @@ const AddFile = () => {
             document.body.removeChild(link);
             window.URL.revokeObjectURL(url);
         } catch (error) {
-            console.error(error);
+            console.error(error, "fdfdf");
             setLoader(false)
-            toast.error("something went wrong");
+            toast.error("Something went wrong");
         }
     }
 

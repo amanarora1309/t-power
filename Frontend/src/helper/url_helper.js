@@ -39,6 +39,11 @@ export const CREATE_PDF_FROM_IMAGES = url + "convertImagesToPdf";
 export const CREATE_PDF_FROM_IMAGES_REPLACE = url + "convertImagesToPdfReplace";
 
 
+export const DELETE_DIRECTORY = url + "deleteDirectory";
+export const DELETE_PDF = url + "deletePdf";
+export const GET_DETAIL = url + "getDetail";
+
+
 
 export const GET_PROCESS_DATA = url + "ProcessData";
 export const SCAN_FILES = url + "ScanFiles";

@@ -70,6 +70,7 @@ const UserManagment = () => {
     const [taggingAccess, setTaggingAccess] = useState(false);
     const [wareHouseAccess, setWareHouseAccess] = useState(false);
     const [userManagementAccess, setUserManagementAccess] = useState(false);
+    const [maintainanceAccess, setMaintainanceAccess] = useState(false);
 
 
 
@@ -110,6 +111,7 @@ const UserManagment = () => {
                     taggingAccess,
                     wareHouseAccess,
                     userManagementAccess,
+                    maintainanceAccess
                 };
                 const data = await updateUser({ id, userName, email, mobile, permissions })
                 if (data?.success) {
@@ -124,6 +126,7 @@ const UserManagment = () => {
                     setTaggingAccess(false);
                     setWareHouseAccess(false);
                     setUserManagementAccess(false);
+                    setMaintainanceAccess(false);
                     setCreateModalShow(false)
                     fetchUsers();
                     setSpanDisplay("none");
@@ -171,6 +174,7 @@ const UserManagment = () => {
                         taggingAccess,
                         wareHouseAccess,
                         userManagementAccess,
+                        maintainanceAccess
                     };
 
                     const data = await createUser({ userName, email, mobile, permissions, password });
@@ -188,6 +192,7 @@ const UserManagment = () => {
                         setTaggingAccess(false);
                         setWareHouseAccess(false);
                         setUserManagementAccess(false);
+                        setMaintainanceAccess(false);
                         setCreateModalShow(false);
                         fetchUsers();
                         setSpanDisplay("none");
@@ -251,6 +256,7 @@ const UserManagment = () => {
         setTaggingAccess(d.permissions.taggingAccess);
         setWareHouseAccess(d.permissions.wareHouseAccess);
         setUserManagementAccess(d.permissions.userManagementAccess);
+        setMaintainanceAccess(d.permissions.maintainanceAccess);
     }
 
     const handleDashboardRights = (e) => { dashboardAccess === false ? setDashboardAccess(true) : setDashboardAccess(false) }
@@ -258,6 +264,7 @@ const UserManagment = () => {
     const handleTaggingRights = (e) => { taggingAccess === false ? setTaggingAccess(true) : setTaggingAccess(false) }
     const handleWareHouseRights = (e) => { wareHouseAccess === false ? setWareHouseAccess(true) : setWareHouseAccess(false) }
     const handleUserManagementRights = (e) => { userManagementAccess === false ? setUserManagementAccess(true) : setUserManagementAccess(false) }
+    const handleMaintainanceRights = (e) => { maintainanceAccess === false ? setMaintainanceAccess(true) : setMaintainanceAccess(false) }
 
     return (
         <>
@@ -485,6 +492,21 @@ const UserManagment = () => {
                                 />
                             </div>
                         </div>
+                        <div className="mb-3 col-md-4 col-12 d-flex align-items-center">
+                            <label htmlFor="warehouse_access" className="col-md-6 col-form-label" style={{ fontSize: ".8rem" }}>
+                                Maintainance Access
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="checkbox"
+                                    id="maintainance_access"
+                                    name="maintainance_access"
+                                    value={1}
+                                    onChange={handleMaintainanceRights}
+                                    checked={maintainanceAccess ? 'checked' : ''}
+                                />
+                            </div>
+                        </div>
 
                     </div>
 
@@ -678,6 +700,21 @@ const UserManagment = () => {
                                     value={1}
                                     onChange={handleUserManagementRights}
                                     checked={userManagementAccess ? 'checked' : ''}
+                                />
+                            </div>
+                        </div>
+                        <div className="mb-3 col-md-4 col-12 d-flex align-items-center">
+                            <label htmlFor="warehouse_access" className="col-md-6 col-form-label" style={{ fontSize: ".8rem" }}>
+                                Maintainance Access
+                            </label>
+                            <div className="mt-2">
+                                <input
+                                    type="checkbox"
+                                    id="maintainance_access"
+                                    name="maintainance_access"
+                                    value={1}
+                                    onChange={handleMaintainanceRights}
+                                    checked={maintainanceAccess ? 'checked' : ''}
                                 />
                             </div>
                         </div>

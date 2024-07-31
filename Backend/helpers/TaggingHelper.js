@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import sharp from 'sharp';
-import { PDFDocument } from 'pdf-lib';
+import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -64,12 +64,7 @@ export const createOrAppendPdfWithImages = async (imageNames, pdfPath) => {
 };
 
 export const createPdfWithImages = async (imageNames, pdfPath) => {
-    const doc = new PDFDocument();
-    const writeStream = fs.createWriteStream(pdfPath);
-
-    doc.pipe(writeStream);
-
-    let imagesAdded = false;
+    const pdfDoc = await PDFDocument.create();
 
     for (const imageName of imageNames) {
         const imagePath = path.join(__dirname, '..', imageName);
@@ -78,37 +73,20 @@ export const createPdfWithImages = async (imageNames, pdfPath) => {
         // Optimize the image
         await optimizeImage(imagePath, optimizedImagePath);
 
-        await new Promise((resolve, reject) => {
-            fs.access(imagePath, fs.constants.F_OK, (err) => {
-                if (err) {
-                    console.error(`Image not found: ${imageName}`);
-                    reject(new Error(`Image not found: ${imageName}`));
-                    return;
-                }
+        const imageBytes = fs.readFileSync(optimizedImagePath);
+        const image = await pdfDoc.embedJpg(imageBytes);
 
-                if (!imagesAdded) {
-                    imagesAdded = true; // The first image will start the document
-                } else {
-                    doc.addPage(); // Add a new page for subsequent images
-                }
-
-                doc.image(optimizedImagePath, { fit: [500, 700], align: 'center', valign: 'center' });
-                console.log(`Added image to PDF: ${imageName}`);
-                resolve(); // Resolve after processing the image
-            });
+        const page = pdfDoc.addPage([image.width, image.height]);
+        page.drawImage(image, {
+            x: 0,
+            y: 0,
+            width: image.width,
+            height: image.height,
         });
     }
 
-    if (imagesAdded) {
-        doc.end();
-    } else {
-        throw new Error('No valid images were added to the PDF');
-    }
-
-    return new Promise((resolve, reject) => {
-        writeStream.on('finish', resolve);
-        writeStream.on('error', reject);
-    });
+    const pdfBytes = await pdfDoc.save();
+    fs.writeFileSync(pdfPath, pdfBytes);
 };
 
 

@@ -8,6 +8,7 @@ import fileDataRoutes from "./routes/fileDataRoutes.js"
 import warehouseRoutes from "./routes/warehouseRoutes.js"; // Import warehouse routes
 import taggingRoutes from "./routes/taggingRoutes.js"
 import analysisRoutes from "./routes/analysisRoutes.js";
+import maintainanceRoutes from "./routes/maintainanceRoutes.js"
 import bwipjs from 'bwip-js';
 import FileData from "./models/FileData.js";
 import Warehouse from "./models/warehouse.js";
@@ -39,6 +40,7 @@ app.use("/", warehouseRoutes);
 app.use("/", taggingRoutes);
 app.use("/", taggingRoutes);
 app.use("/", analysisRoutes);
+app.use("/", maintainanceRoutes);
 
 
 
@@ -54,7 +56,7 @@ sequelize.sync({ force: false }).then(async () => {
     const adminUser = await User.findOne({ where: { email: "admin@gmail.com" } });
     const hashedPassword = await hashPassword("123456");
     if (!adminUser) {
-        await User.create({ 
+        await User.create({
             userName: "admin",
             mobile: "1234567890",
             email: "admin@gmail.com",
