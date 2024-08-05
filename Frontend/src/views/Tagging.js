@@ -294,6 +294,8 @@ const Tagging = () => {
 
 
     const handleFileChange = async (e) => {
+        setSelectedBarcode("");
+        setSelectedCSA("");
         const selectedFile = e.target.files[0];
 
         setFile(selectedFile);

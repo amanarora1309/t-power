@@ -160,34 +160,61 @@ const Warehouse = () => {
     }
 
     const handleAddFileSubmit = async () => {
-        console.log("click hand add file")
-        console.log(floorNumber)
-        if (!boxNumber || !shelfNumber || !rackNumber, !floorNumber) {
-            console.log("click hand add file2")
-            setSpanDisplay("inline");
+        // Temporary variables to hold the validated values
+        let validatedShelfNumber = shelfNumber;
+        let validatedRackNumber = rackNumber;
+        let validatedFloorNumber = floorNumber;
+
+        if (!shelfNumber) {
+            validatedShelfNumber = "0";
         }
-        else {
-            try {
-                const data = await addFiletoWarehouse({ boxNumber, shelfNumber, rackNumber, floorNumber, selectedCSA })
-                if (data?.success) {
-                    toast.success(data?.message);
-                    setAddFileModal(false);
-                    setBoxNumber("");
-                    setShelfNumber("");
-                    setRackNumber("");
-                    setSelectedCSA("");
-                    setSelectedBarcode("")
-                    setFloorNumber("");
-                }
-                else {
-                    toast.error(data?.message)
-                }
-            } catch (error) {
-                console.log(error);
-                toast.error("something went wrong");
+        if (!rackNumber) {
+            validatedRackNumber = "0";
+        }
+        if (!floorNumber) {
+            validatedFloorNumber = "0";
+        }
+
+        // Check if boxNumber is present
+        if (!boxNumber) {
+            setSpanDisplay("inline");
+            return;
+        }
+
+        // Update state with validated values before making the API call
+        setShelfNumber(validatedShelfNumber);
+        setRackNumber(validatedRackNumber);
+        setFloorNumber(validatedFloorNumber);
+
+        // Proceed with the API call
+        try {
+            const data = await addFiletoWarehouse({
+                boxNumber,
+                shelfNumber: validatedShelfNumber,
+                rackNumber: validatedRackNumber,
+                floorNumber: validatedFloorNumber,
+                selectedCSA
+            });
+
+            if (data?.success) {
+                toast.success(data?.message);
+                setAddFileModal(false);
+                // Reset state values only if the API call is successful
+                setBoxNumber("");
+                setShelfNumber("");
+                setRackNumber("");
+                setSelectedCSA("");
+                setSelectedBarcode("");
+                setFloorNumber("");
+            } else {
+                toast.error(data?.message);
             }
+        } catch (error) {
+            console.error("Error occurred while adding file to warehouse:", error);
+            toast.error("Something went wrong");
         }
     }
+
 
     const handleIssueFileSubmit = async () => {
         if (!fileIssueReason || !issueTo) {
