@@ -241,29 +241,49 @@ const Warehouse = () => {
     }
 
     const handleReturnFileSubmit = async () => {
-        if (!boxNumber || !shelfNumber || !rackNumber, !floorNumber) {
+        let validatedShelfNumber = shelfNumber;
+        let validatedRackNumber = rackNumber;
+        let validatedFloorNumber = floorNumber;
+
+        if (!shelfNumber) {
+            validatedShelfNumber = "0";
+        }
+        if (!rackNumber) {
+            validatedRackNumber = "0";
+        }
+        if (!floorNumber) {
+            validatedFloorNumber = "0";
+        }
+
+        // Check if boxNumber is present
+        if (!boxNumber) {
             setSpanDisplay("inline");
+            return;
         }
-        else {
-            try {
-                const data = await returnFile({ boxNumber, shelfNumber, rackNumber, floorNumber, selectedCSA })
-                if (data?.success) {
-                    toast.success(data?.message);
-                    setReturnFileModal(false);
-                    setBoxNumber("");
-                    setShelfNumber("");
-                    setRackNumber("");
-                    setSelectedCSA("");
-                    setFloorNumber("");
-                }
-                else {
-                    toast.error(data?.message)
-                }
-            } catch (error) {
-                console.log(error);
-                toast.error("something went wrong");
+
+        // Update state with validated values before making the API call
+        setShelfNumber(validatedShelfNumber);
+        setRackNumber(validatedRackNumber);
+        setFloorNumber(validatedFloorNumber);
+        try {
+            const data = await returnFile({ boxNumber, shelfNumber, rackNumber, floorNumber, selectedCSA })
+            if (data?.success) {
+                toast.success(data?.message);
+                setReturnFileModal(false);
+                setBoxNumber("");
+                setShelfNumber("");
+                setRackNumber("");
+                setSelectedCSA("");
+                setFloorNumber("");
             }
+            else {
+                toast.error(data?.message)
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error("something went wrong");
         }
+
     }
 
     return (
