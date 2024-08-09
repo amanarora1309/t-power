@@ -34,6 +34,7 @@ import Warehouse from "views/Warehouse";
 import Tagging from "views/Tagging";
 import AddFile from "views/AddFile";
 import Maintainance from "views/Maintainance";
+import Report from "views/Report";
 
 
 
@@ -84,11 +85,19 @@ var routes = [
     component: <UserManagment />,
     layout: "/admin",
   }] : []),
+
   ...(access?.maintainanceAccess ? [{
     path: "/maintainance",
     name: "Maintainance",
     icon: "ni ni-controller text-primary",
     component: <Maintainance />,
+    layout: "/admin",
+  }] : []),
+  ...(access?.reportAccess ? [{
+    path: "/report",
+    name: "Report",
+    icon: "ni ni-chart-pie-35 text-primary",
+    component: <Report />,
     layout: "/admin",
   }] : []),
 

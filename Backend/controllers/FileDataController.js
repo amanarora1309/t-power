@@ -4,6 +4,7 @@ import fs from 'fs/promises';
 import { Op } from 'sequelize';
 import Tagging from '../models/tagging.js';
 import Warehouse from '../models/warehouse.js';
+import sequelize from '../utils/db.js';
 
 export const saveFileDataController = async (req, res) => {
     const { CSA, noOfPages, typeOfRequest, dateOfApplication, barcode, collPoint } = req.body;
@@ -116,6 +117,10 @@ export const UpdateFileDataController = async (req, res) => {
 export const getAllFilesDataController = async (req, res) => {
     try {
         const result = await FileData.findAll();
+
+
+
+
         res.status(200).json({ success: true, message: "All files data", data: result });
     } catch (error) {
         console.error('Error fetching files:', error);
@@ -131,7 +136,6 @@ export const getFileDataBasedOnCondition = async (req, res) => {
 
         // Calculate the date based on the number of days
         const daysInt = parseInt(days, 10);
-        console.log(days)
         if (isNaN(daysInt)) {
             return res.status(400).json({ error: 'Invalid number of days' });
         }
@@ -166,5 +170,80 @@ export const getFileDetailData = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error in get data', error });
     }
 }
+
+
+export const getReoprtData = async (req, res) => {
+    try {
+        const fileData = await FileData.findAll({
+            attributes: [
+                'dateOfApplication',
+                'collectionPoint',
+                [sequelize.fn('COUNT', sequelize.col('id')), 'fileCount'],
+                [sequelize.fn('SUM', sequelize.col('noOfPages')), 'totalPages']
+            ],
+            group: ['dateOfApplication', 'collectionPoint'],
+            raw: true
+        });
+
+        // Process data to group by date
+        const groupedData = fileData.reduce((acc, item) => {
+            // Convert dateOfApplication to string if it's not
+            const date = item.dateOfApplication instanceof Date
+                ? item.dateOfApplication.toISOString().split('T')[0] // Format date as YYYY-MM-DD
+                : new Date(item.dateOfApplication).toISOString().split('T')[0];
+
+            if (!acc[date]) {
+                acc[date] = {
+                    Date: new Date(date),
+                    collectionPoint: "",
+                    files: 0,
+                    totalPages: 0,
+                    approved: false,
+                    subData: []
+                };
+            }
+
+            // Aggregate total files and pages for each date
+            acc[date].files += parseInt(item.fileCount, 10);
+            acc[date].totalPages += parseInt(item.totalPages, 10);
+
+            // Add subData for each collection point
+            const subDataEntry = acc[date].subData.find(sub => sub.collectionPoint === item.collectionPoint);
+            if (subDataEntry) {
+                subDataEntry.files += parseInt(item.fileCount, 10);
+                subDataEntry.pages += parseInt(item.totalPages, 10);
+            } else {
+                acc[date].subData.push({
+                    date: new Date(date),
+                    collectionPoint: item.collectionPoint || "",
+                    files: parseInt(item.fileCount, 10),
+                    pages: parseInt(item.totalPages, 10),
+                    priority: 'Normal',
+                    approved: false
+                });
+            }
+
+            return acc;
+        }, {});
+
+        // Convert the object to an array
+        const result = Object.values(groupedData);
+        // Send the formatted data as a response
+        res.status(200).json({ success: true, message: "Reoprt Data", result: result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in getting report data', error });
+    }
+}
+
+
+
+
+
+
+
+
+
+
 
 

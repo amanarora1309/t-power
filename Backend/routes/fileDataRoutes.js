@@ -1,5 +1,5 @@
 import express from 'express';
-import { getAllFilesDataController, getFileDataBasedOnCondition, getFileDetailData, saveFileDataController, UpdateFileDataController } from '../controllers/FileDataController.js';
+import { getAllFilesDataController, getFileDataBasedOnCondition, getFileDetailData, getReoprtData, saveFileDataController, UpdateFileDataController } from '../controllers/FileDataController.js';
 
 const app = express();
 const router = express.Router();
@@ -10,5 +10,6 @@ router.post("/updateFileData", UpdateFileDataController);
 router.get("/getAllFilesData", getAllFilesDataController);
 router.post("/getFilterFiles", getFileDataBasedOnCondition);
 router.post("/getFileDetailData", getFileDetailData);
+router.post("/getReportData", getReoprtData);
 
 export default router;

@@ -31,7 +31,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import DesignTemplate from "views/DesignTemplate";
 import { registerLicense } from '@syncfusion/ej2-base';
 
-registerLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCeUx0TXxbf1x0ZFFMYFpbQXNPMyBoS35RckVlW3dedHRdQ2FaWUF2")
+
+registerLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXdeeHRQR2FYVEB0X0E=")
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
 root.render(

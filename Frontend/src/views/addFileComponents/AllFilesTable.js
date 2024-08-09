@@ -5,10 +5,13 @@ import Select from "react-select"
 import { toast } from 'react-toastify';
 import { getFilterFilesData } from 'helper/fileData_helper';
 import { getFileDetailData } from 'helper/fileData_helper';
-
+import { GridComponent, ColumnsDirective, ColumnDirective, Page, Toolbar, Sort, Inject, Filter } from '@syncfusion/ej2-react-grids';
 const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, setTypeOfRequest, setNoOfPages, setDateOfApplication, setBarcode, setCollectionPoint, files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal, setUpdateModal }) => {
     const [selectedDays, setSelectedDays] = useState("");
     const [filterFiles, setFilterFiles] = useState([]);
+    const filterSettings = { type: 'Excel' };
+    const toolbarOptions = ['Search'];
+
 
     const daysData = [
         { id: 1, name: "One Day", value: 1 },
@@ -86,6 +89,38 @@ const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, s
             toast.error(error?.response?.data?.message);
         }
     }
+
+
+    const dropdownTemplate = (props) => (
+        <td className="text-right">
+            <UncontrolledDropdown>
+                <DropdownToggle
+                    className="btn-icon-only text-light"
+                    href="#pablo"
+                    role="button"
+                    size="sm"
+                    color=""
+                    onClick={(e) => e.preventDefault()}
+                >
+                    <i className="fas fa-ellipsis-v" />
+                </DropdownToggle>
+                <DropdownMenu className="dropdown-menu-arrow" right>
+                    <DropdownItem
+                        href="#pablo"
+                        onClick={() => handleEditRowClick(props)}
+                    >
+                        Edit
+                    </DropdownItem>
+                    <DropdownItem
+                        href="#pablo"
+                        onClick={() => handleRowClick(props)}
+                    >
+                        View
+                    </DropdownItem>
+                </DropdownMenu>
+            </UncontrolledDropdown>
+        </td>
+    );
     return (
         <>
             <Row>
@@ -117,121 +152,79 @@ const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, s
                                 </div>
                             </div>
                         </CardHeader>
-                        <Table className="align-items-center table-flush mb-5" responsive>
-                            <thead className="thead-light">
-                                <tr>
-                                    <th scope="col">Sno.</th>
-                                    <th scope="col">CSA</th>
-                                    <th scope="col">Barcode</th>
-                                    <th scope="col">Type of Request</th>
-                                    <th scope="col">No of Pages</th>
-                                    <th scope="col">Entry Date</th>
-                                    <th scope="col" />
-                                </tr>
-                            </thead>
-                            <tbody style={{ minHeight: "100rem" }}>
-                                {filterFiles.length > 0 ?
-                                    filterFiles?.map((d, i) => (
-                                        <>
-                                            <tr key={i} style={{ cursor: "pointer" }}>
-                                                <td>{i + 1}</td>
 
-                                                <td>{d.CSA}</td>
 
-                                                <td>{d.barcode}</td>
+                        {filterFiles.length > 0 ?
+                            <div className="table">
+                                <div className='control-pane'>
+                                    <div className='control-section row justify-content-center'>
+                                        <GridComponent
+                                            dataSource={filterFiles}
+                                            width="95%"
+                                            toolbar={toolbarOptions}
+                                            allowSorting={true}
+                                            allowFiltering={true}
+                                            filterSettings={filterSettings}
+                                            allowPaging={true}
+                                            pageSettings={{ pageSize: 10, pageCount: 5 }}
+                                        >
+                                            <ColumnsDirective>
+                                                <ColumnDirective field='CSA' headerText='CSA' width='300'></ColumnDirective>
+                                                <ColumnDirective field='barcode' headerText='Barcode' width='300'></ColumnDirective>
+                                                <ColumnDirective field='typeOfRequest' headerText='Type Of Request' width='300'></ColumnDirective>
+                                                <ColumnDirective field='noOfPages' headerText='No of Pages' width='300'></ColumnDirective>
+                                                <ColumnDirective field='createdAt' headerText='Created At' width='300'></ColumnDirective>
+                                                <ColumnDirective
+                                                    headerText='Actions'
+                                                    width='150'
+                                                    template={dropdownTemplate}
+                                                    textAlign='Right'
+                                                />
+                                            </ColumnsDirective>
+                                            <Inject services={[Toolbar, Page, Sort, Filter]} />
+                                        </GridComponent>
+                                    </div>
 
-                                                <td>{d.typeOfRequest}</td>
+                                </div>
+                            </div>
+                            :
+                            <div className="table">
+                                <div className='control-pane'>
+                                    <div className='control-section row justify-content-center'>
+                                        <GridComponent
+                                            dataSource={files}
+                                            width="95%"
+                                            toolbar={toolbarOptions}
+                                            allowSorting={true}
+                                            allowFiltering={true}
+                                            filterSettings={filterSettings}
+                                            allowPaging={true}
+                                            pageSettings={{ pageSize: 10, pageCount: 5 }}
+                                        >
+                                            <ColumnsDirective>
+                                                <ColumnDirective field='CSA' headerText='CSA' width='300'></ColumnDirective>
+                                                <ColumnDirective field='barcode' headerText='Barcode' width='300'></ColumnDirective>
+                                                <ColumnDirective field='typeOfRequest' headerText='Type Of Request' width='300'></ColumnDirective>
+                                                <ColumnDirective field='noOfPages' headerText='No of Pages' width='300'></ColumnDirective>
+                                                <ColumnDirective field='createdAt' headerText='Created At' width='300'></ColumnDirective>
+                                                <ColumnDirective
+                                                    headerText='Actions'
+                                                    width='150'
+                                                    template={dropdownTemplate}
+                                                    textAlign='Right'
+                                                />
+                                            </ColumnsDirective>
+                                            <Inject services={[Toolbar, Page, Sort, Filter]} />
+                                        </GridComponent>
+                                    </div>
 
-                                                <td>{d.noOfPages}</td>
-
-                                                <td>{format(new Date(d.createdAt), 'yyyy-MM-dd ')}</td>
-
-                                                <td className="text-right">
-                                                    <UncontrolledDropdown>
-                                                        <DropdownToggle
-                                                            className="btn-icon-only text-light"
-                                                            href="#pablo"
-                                                            role="button"
-                                                            size="sm"
-                                                            color=""
-                                                            onClick={(e) => e.preventDefault()}
-                                                        >
-                                                            <i className="fas fa-ellipsis-v" />
-                                                        </DropdownToggle>
-                                                        <DropdownMenu className="dropdown-menu-arrow" right>
-                                                            <DropdownItem
-                                                                href="#pablo"
-                                                                onClick={() => handleEditRowClick(d)}
-                                                            >
-                                                                Edit
-                                                            </DropdownItem>
-                                                            <DropdownItem
-                                                                href="#pablo"
-                                                                onClick={() => handleRowClick(d)}
-                                                            >
-                                                                View
-                                                            </DropdownItem>
-
-                                                        </DropdownMenu>
-                                                    </UncontrolledDropdown>
-                                                </td>
-                                            </tr>
-                                        </>
-                                    ))
-                                    :
-                                    files?.map((d, i) => (
-                                        <>
-                                            <tr key={i} style={{ cursor: "pointer" }}>
-                                                <td>{i + 1}</td>
-
-                                                <td>{d.CSA}</td>
-
-                                                <td>{d.barcode}</td>
-
-                                                <td>{d.typeOfRequest}</td>
-
-                                                <td>{d.noOfPages}</td>
-
-                                                <td>{format(new Date(d.createdAt), 'yyyy-MM-dd ')}</td>
-
-                                                <td className="text-right">
-                                                    <UncontrolledDropdown>
-                                                        <DropdownToggle
-                                                            className="btn-icon-only text-light"
-                                                            href="#pablo"
-                                                            role="button"
-                                                            size="sm"
-                                                            color=""
-                                                            onClick={(e) => e.preventDefault()}
-                                                        >
-                                                            <i className="fas fa-ellipsis-v" />
-                                                        </DropdownToggle>
-                                                        <DropdownMenu className="dropdown-menu-arrow" right>
-                                                            <DropdownItem
-                                                                href="#pablo"
-                                                                onClick={() => handleEditRowClick(d)}
-                                                            >
-                                                                Edit
-                                                            </DropdownItem>
-                                                            <DropdownItem
-                                                                href="#pablo"
-                                                                onClick={() => handleRowClick(d)}
-                                                            >
-                                                                View
-                                                            </DropdownItem>
-
-                                                        </DropdownMenu>
-                                                    </UncontrolledDropdown>
-                                                </td>
-                                            </tr>
-                                        </>
-                                    ))
-                                }
+                                </div>
+                            </div>
+                        }
 
 
 
-                            </tbody>
-                        </Table>
+
 
                     </Card>
                 </div>

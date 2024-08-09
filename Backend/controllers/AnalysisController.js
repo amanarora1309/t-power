@@ -17,9 +17,6 @@ export const getAnalysisData = async (req, res) => {
 
         const taggingData = await Tagging.findAll();
         const warehouseData = await Warehouse.findAll();
-        console.log(fileData.length)
-        console.log(warehouseData.length)
-        console.log(filterTaggingData(taggingData))
 
         const fileDataCount = fileData.length;
         const warehouseCount = warehouseData.length;
@@ -31,6 +28,63 @@ export const getAnalysisData = async (req, res) => {
     }
 }
 
+
+export const getTodayAnalysisData = async (req, res) => {
+    try {
+
+
+        // Get today's date in the format needed for your database
+        const today = new Date();
+        const startOfDay = new Date(today.setHours(0, 0, 0, 0));
+        const endOfDay = new Date(today.setHours(23, 59, 59, 999));
+
+        // Fetch data created today
+        const fileData = await FileData.findAll({
+            where: {
+                createdAt: {
+                    [Op.between]: [startOfDay, endOfDay]
+                }
+            }
+        });
+        const taggingData = await Tagging.findAll({
+            where: {
+                createdAt: {
+                    [Op.between]: [startOfDay, endOfDay]
+                }
+            }
+        });
+
+        const warehouseData = await Warehouse.findAll({
+            where: {
+                createdAt: {
+                    [Op.between]: [startOfDay, endOfDay]
+                }
+            }
+        });
+
+        // Filter taggingData based on unique fileDataId if necessary
+        const filteredTaggingData = filterTaggingData(taggingData);
+
+        const fileDataCount = fileData.length;
+        const warehouseCount = warehouseData.length;
+        const taggingCount = filteredTaggingData.length;
+
+        res.status(200).json({
+            success: true,
+            message: "Analysis data",
+            data: {
+                fileDataCount,
+                warehouseCount,
+                taggingCount
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in get analysis data', error });
+    }
+};
+
+
 export const downloadDataCsv = async (req, res) => {
     try {
         const { from, to } = req.body;
@@ -39,8 +93,6 @@ export const downloadDataCsv = async (req, res) => {
         const fromDate = new Date(from);
         const toDate = new Date(to);
         toDate.setUTCHours(23, 59, 59, 999);
-        console.log(fromDate)
-        console.log(toDate)
         if (isNaN(fromDate) || isNaN(toDate)) {
             return res.status(400).json({ success: false, message: 'Invalid date range' });
         }
@@ -65,13 +117,13 @@ export const downloadDataCsv = async (req, res) => {
             const tagging = await Tagging.findAll({ where: { fileDataId: file.id } });
             const filteredTagging = filterTaggingData(tagging);
             const warehouse = await Warehouse.findAll({ where: { fileDataId: file.id } });
-            return { fileData: file, tagging: tagging, warehouse: warehouse };
+            const noOfPages = file.noOfPages;
+            return { fileData: file, tagging: tagging, warehouse: warehouse, noOfPages };
         }));
 
         if (fileDataList.length === 0) {
             return res.status(404).json({ success: false, message: 'No Data Found' });
         }
-
         // Generate the Excel file
         const filePath = await generateExcelFile(fileDataList);
 
@@ -115,7 +167,8 @@ export const generateExcelFile = async (data) => {
         'Tagging Status',
         'Tagging Documents',
         'Warehousing Status',
-        'Warehousing Details'
+        'Warehousing Details',
+        'No Of Pages',
     ]);
 
     // Add data rows
@@ -124,7 +177,6 @@ export const generateExcelFile = async (data) => {
         let a = entry.tagging.map((d) => {
             taggingDocuments += d.documentName + ", "
         });
-        console.log(taggingDocuments)
         // Add fileData information
         const fileDataRow = [
             index + 1,
@@ -140,11 +192,12 @@ export const generateExcelFile = async (data) => {
 
         // Join details for Tagging and Warehousing
         const warehouseDetails = entry.warehouse.map(wh => `Box: ${wh.boxNumber}, Shelf: ${wh.shelfNumber}, Rack: ${wh.rackNumber}`).join('; ');
-
+        const noOfPagesDetail = entry.noOfPages;
         // Add details to the row
         sheetData.push([
             ...fileDataRow,
-            warehouseDetails
+            warehouseDetails,
+            noOfPagesDetail
         ]);
     });
 

@@ -92,7 +92,6 @@ const AddFile = () => {
             }
         } catch (error) {
             setLoader(false);
-            console.error('Error generating barcode:', error);
             toast.error(error?.response?.data?.message);
         }
     };

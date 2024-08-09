@@ -19,10 +19,12 @@ export const UPDATE_FILE_DATA = url + "updateFileData";
 export const GET_ALL_FILEDATA = url + "getAllFilesData";
 export const GET_FILE_DETAIL_DATA = url + "getFileDetailData";
 export const GET_FILTER_FILES = url + "getFilterFiles";
+export const GET_REPORT_DATA = url + "getReportData";
 
 export const PRINT_BARCODE = url + "printBarcode";
 
 export const GET_ANALYSIS_DATA = url + "getAnalysisData";
+export const GET_TODAY_ANALYSIS_DATA = url + "getTodayAnalysisData";
 export const DOWNLOAD_DATA_CSV = url + "downloadDataCsv";
 export const DOWNLOAD_ZIP_FILE = url + "downloadZipFile";
 export const DOWNLOAD_PDF = url + "downloadPdf";
