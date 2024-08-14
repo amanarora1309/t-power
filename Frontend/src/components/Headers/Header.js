@@ -110,7 +110,7 @@ const Header = () => {
                         >
                           Total Tagging
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0"> {analysisData?.warehouseCount} </span>
+                        <span className="h2 font-weight-bold mb-0"> {analysisData?.taggingCount} </span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -138,7 +138,7 @@ const Header = () => {
                         >
                           Total Warehousing
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{analysisData?.taggingCount}</span>
+                        <span className="h2 font-weight-bold mb-0">{analysisData?.warehouseCount}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">

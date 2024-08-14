@@ -363,6 +363,7 @@ const Report = () => {
                                                         width="400"
                                                         textAlign="center"
                                                     />
+
                                                 </ColumnsDirective>
                                                 <Inject services={[Filter, Page, Toolbar]} />
                                             </TreeGridComponent>

@@ -35,7 +35,7 @@ export const ADD_FILE_TO_WAREHOUSE = url + "addFile";
 export const ISSUE_FILE = url + "issueFile";
 export const RETURN_FILE = url + "returnFile";
 export const GET_FILE_DATA_FROM_BARCODE = url + "getFileDataFromBarcode"
-
+export const GET_WAREHOUSING_RECORD = url + "getWarehousingRecord";
 
 export const CREATE_PDF_FROM_IMAGES = url + "convertImagesToPdf";
 export const CREATE_PDF_FROM_IMAGES_REPLACE = url + "convertImagesToPdfReplace";

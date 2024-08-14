@@ -33,6 +33,8 @@ import { issueFile } from "helper/warehouse_helper";
 import { returnFile } from "helper/warehouse_helper";
 import { getFileDataFromBarcode } from "helper/warehouse_helper";
 import { getAllFilesData } from "helper/fileData_helper";
+import { getWarehousingRecord } from "helper/warehouse_helper";
+import Loader from "components/Loader/Loader";
 
 const Warehouse = () => {
     const [selectedCSA, setSelectedCSA] = useState("");
@@ -45,7 +47,7 @@ const Warehouse = () => {
     const [floorNumber, setFloorNumber] = useState("");
     const [fileIssueReason, setFileIssueReason] = useState("");
     const [fileIssueTo, setFileIssueTo] = useState("");
-
+    const [loader, setLoader] = useState(false);
     const [allUsers, setAllUsers] = useState([]);
     const [selectedUser, setSelectedUser] = useState("");
 
@@ -54,12 +56,11 @@ const Warehouse = () => {
     const [fileData, setFileData] = useState({});
     const [selectedBarcode, setSelectedBarcode] = useState("");
     const [issueTo, setIssueTo] = useState("");
-
+    const [csaOldRecord, setCsaOldRecord] = useState(null);
 
     const fetchUsers = async () => {
         try {
             const data = await fetchAllUsers();
-            console.log("from users --> ", data.data)
             if (data?.success) {
                 setAllUsers(data?.data);
             }
@@ -88,24 +89,33 @@ const Warehouse = () => {
 
     const getFileData = async (selectedCSA) => {
         try {
+            setLoader(true);
             const data = await getFileDataFromBarcode({ selectedCSA });
+            setLoader(false);
             if (data?.success) {
                 setFileData(data?.file);
-                setBoxNumber(data?.file?.boxNumber);
-                setShelfNumber(data?.file?.shelfNumber);
-                setRackNumber(data?.file?.rackNumber);
-                setFloorNumber(data?.file?.floorNumber);
             }
             else {
-                toast.warning(data?.message);
                 setFileData(null);
-                setBoxNumber(null);
-                setShelfNumber(null);
-                setRackNumber(null);
-                setFloorNumber(null);
             }
         } catch (error) {
+            setLoader(false);
             console.log(error);
+        }
+    }
+
+    const getOldDataWithSameCsa = async (selectedCSA) => {
+        try {
+            setLoader(true);
+            const data = await getWarehousingRecord({ CSA: selectedCSA?.CSA });
+            setLoader(false);
+            if (data?.success) {
+                setCsaOldRecord(data?.result);
+
+            }
+        } catch (error) {
+            setLoader(false);
+            toast.error(error?.response?.data?.message);
         }
     }
 
@@ -113,40 +123,67 @@ const Warehouse = () => {
         setSelectedBarcode(selectedOption);
         setSelectedCSA(selectedOption);
         getFileData(selectedOption);
+        getOldDataWithSameCsa(selectedOption);
         setBoxNumber("")
         setShelfNumber("")
         setRackNumber("")
         setFloorNumber("")
+        setCsaOldRecord(null);
+        setFileData(null);
     };
 
     const handleBarcodeChange = selectedOption => {
         setSelectedBarcode(selectedOption);
         setSelectedCSA(selectedOption);
         getFileData(selectedOption);
+        getOldDataWithSameCsa(selectedOption);
         setBoxNumber("")
         setShelfNumber("")
         setRackNumber("")
         setFloorNumber("")
+        setCsaOldRecord(null);
+        setFileData(null);
     }
     const handleSelectUser = selectedOption => {
         setSelectedUser(selectedOption);
-        console.log(selectedOption);
     };
 
     const handleAddFile = () => {
+
         if (selectedCSA == "") {
             toast.error("Kindly Select the CSA Number")
         }
+        else if (fileData) {
+            toast.error("Warehousing is already done of this file")
+        }
         else {
+
+            if (csaOldRecord) {
+                setBoxNumber(csaOldRecord[0]?.boxNumber);
+                setShelfNumber(csaOldRecord[0]?.shelfNumber);
+                setRackNumber(csaOldRecord[0]?.rackNumber);
+                setFloorNumber(csaOldRecord[0]?.floorNumber);
+                toast.success("File with this CSA already exists")
+            }
             setAddFileModal(true);
         }
     }
     const handleIssueFile = () => {
+
         if (selectedCSA == "") {
             toast.error("Kindly Select the CSA Number")
         }
         else {
-            setIssueFileModal(true);
+            if (fileData) {
+                setBoxNumber(fileData?.boxNumber);
+                setShelfNumber(fileData?.shelfNumber);
+                setRackNumber(fileData?.rackNumber);
+                setFloorNumber(fileData?.floorNumber);
+                setIssueFileModal(true);
+            }
+            else {
+                toast.error("Warehousing is not done of this file")
+            }
         }
     }
 
@@ -155,7 +192,16 @@ const Warehouse = () => {
             toast.error("Kindly Select the CSA Number")
         }
         else {
-            setReturnFileModal(true);
+            if (fileData) {
+                setBoxNumber(fileData?.boxNumber);
+                setShelfNumber(fileData?.shelfNumber);
+                setRackNumber(fileData?.rackNumber);
+                setFloorNumber(fileData?.floorNumber);
+                setReturnFileModal(true);
+            }
+            else {
+                toast.error("Warehousing is not done of this file")
+            }
         }
     }
 
@@ -188,6 +234,7 @@ const Warehouse = () => {
 
         // Proceed with the API call
         try {
+            setLoader(true);
             const data = await addFiletoWarehouse({
                 boxNumber,
                 shelfNumber: validatedShelfNumber,
@@ -195,7 +242,7 @@ const Warehouse = () => {
                 floorNumber: validatedFloorNumber,
                 selectedCSA
             });
-
+            setLoader(false);
             if (data?.success) {
                 toast.success(data?.message);
                 setAddFileModal(false);
@@ -210,6 +257,7 @@ const Warehouse = () => {
                 toast.error(data?.message);
             }
         } catch (error) {
+            setLoader(false);
             console.error("Error occurred while adding file to warehouse:", error);
             toast.error("Something went wrong");
         }
@@ -222,7 +270,9 @@ const Warehouse = () => {
         }
         else {
             try {
+                setLoader(true);
                 const data = await issueFile({ fileIssueReason, issueTo, selectedCSA })
+                setLoader(false);
                 if (data?.success) {
                     toast.success(data?.message);
                     setIssueFileModal(false);
@@ -234,6 +284,7 @@ const Warehouse = () => {
                     toast.error(data?.message)
                 }
             } catch (error) {
+                setLoader(false);
                 console.log(error);
                 toast.error("something went wrong");
             }
@@ -266,7 +317,9 @@ const Warehouse = () => {
         setRackNumber(validatedRackNumber);
         setFloorNumber(validatedFloorNumber);
         try {
+            setLoader(true);
             const data = await returnFile({ boxNumber, shelfNumber, rackNumber, floorNumber, selectedCSA })
+            setLoader(false);
             if (data?.success) {
                 toast.success(data?.message);
                 setReturnFileModal(false);
@@ -280,6 +333,7 @@ const Warehouse = () => {
                 toast.error(data?.message)
             }
         } catch (error) {
+            setLoader(false);
             console.log(error);
             toast.error("something went wrong");
         }
@@ -290,7 +344,9 @@ const Warehouse = () => {
         <>
             <NormalHeader />
             <Container className="mt--7" fluid>
-
+                {loader ? (
+                    <Loader />
+                ) : ("")}
                 <Row>
 
                     <div className="col">
@@ -372,7 +428,29 @@ const Warehouse = () => {
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
+                    {csaOldRecord &&
+                        <>
+                            <h1>{csaOldRecord?.length} File of this costumer is already exists in warehouse</h1>
 
+
+                            {csaOldRecord.map((d, i) => (
+                                <>
+                                    <div className="m-4">
+                                        <b>
+                                            {i + 1}.
+                                        </b>
+                                        <div className="mx-3">
+
+                                            <h4>Barcode: {d?.barcode}</h4>
+                                            <h4>Type of Application: {d?.typeOfApplication}</h4>
+                                            <h4>Date of Application: {d?.dateOfApplication}</h4>
+                                        </div>
+                                    </div>
+                                </>
+
+                            ))}
+                        </>
+                    }
 
                     <Row className="mb-3">
                         <label

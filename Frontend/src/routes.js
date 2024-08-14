@@ -40,7 +40,6 @@ import Report from "views/Report";
 
 const auth = JSON.parse(localStorage.getItem('auth'));
 const access = auth?.userData?.permissions;
-console.log(auth?.userData?.permissions)
 
 var routes = [
 

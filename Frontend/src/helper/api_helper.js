@@ -30,7 +30,6 @@ export async function get(url, config = {}) {
 }
 
 export async function postWithFormData(url, data, config = {}) {
-    // console.log("from the post--->", data);
     return axiosApi
         .post(url, data, { ...config })
         .then((response) => response.data).catch((error) => {
@@ -38,7 +37,6 @@ export async function postWithFormData(url, data, config = {}) {
         });
 }
 export async function post(url, data, config = {}) {
-    console.log("from the post--->", data);
     return axiosApi
         .post(url, data, { ...config })
         .then((response) => response.data).catch((error) => {

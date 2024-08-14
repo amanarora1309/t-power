@@ -79,7 +79,6 @@ const UserManagment = () => {
     const fetchUsers = async () => {
         try {
             const data = await fetchAllUsers();
-            console.log("from users --> ", data.data)
             if (data?.success) {
                 console.log(roles.result)
                 setAllUsers(data?.data);
@@ -133,6 +132,7 @@ const UserManagment = () => {
                     setCreateModalShow(false)
                     fetchUsers();
                     setSpanDisplay("none");
+                    setModalShow(false);
                 }
                 else {
                     toast.error(data?.message);

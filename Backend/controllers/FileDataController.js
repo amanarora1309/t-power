@@ -217,7 +217,7 @@ export const getReoprtData = async (req, res) => {
                     date: new Date(date),
                     collectionPoint: item.collectionPoint || "",
                     files: parseInt(item.fileCount, 10),
-                    pages: parseInt(item.totalPages, 10),
+                    totalPages: parseInt(item.totalPages, 10),
                     priority: 'Normal',
                     approved: false
                 });
@@ -228,6 +228,9 @@ export const getReoprtData = async (req, res) => {
 
         // Convert the object to an array
         const result = Object.values(groupedData);
+
+        // Sort the data by date in descending order (latest date first)
+        result.sort((a, b) => b.Date - a.Date);
         // Send the formatted data as a response
         res.status(200).json({ success: true, message: "Reoprt Data", result: result });
     } catch (error) {

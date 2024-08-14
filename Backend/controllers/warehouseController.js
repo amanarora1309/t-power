@@ -1,4 +1,5 @@
 
+import FileData from "../models/FileData.js";
 import Warehouse from "../models/warehouse.js";
 
 export const addFile = async (req, res) => {
@@ -182,6 +183,55 @@ export const getFilDataFromBarcode = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error in Getting File Data',
+            error: error.message
+        });
+    }
+}
+
+
+export const getWarehousingRecord = async (req, res) => {
+    try {
+        const { CSA } = req.body;
+
+        // Find all file records matching the CSA
+        const fileRecords = await FileData.findAll({ where: { CSA: CSA } });
+
+        // Initialize an array to store the warehouse records
+        const warehouseRecord = [];
+
+        // Use a for...of loop to handle async operations
+        for (const file of fileRecords) {
+            // Find the corresponding warehouse record for each file
+            const data = await Warehouse.findOne({ where: { fileDataId: file.id } });
+            // Push the file and its corresponding warehouse data into the array
+            if (data) {
+                let finalData = {
+                    barcode: file?.barcode,
+                    CSA: file?.CSA,
+                    typeOfRequest: file?.typeOfRequest,
+                    collectionPoint: file?.collectionPoint,
+                    dateOfApplication: file?.dateOfApplication,
+                    boxNumber: data?.boxNumber,
+                    shelfNumber: data?.shelfNumber,
+                    rackNumber: data?.rackNumber,
+                    floorNumber: data?.floorNumber,
+                }
+                warehouseRecord.push(finalData);
+            }
+
+        }
+
+        // Respond with the collected data
+        res.status(201).json({
+            success: true,
+            message: "File Data",
+            result: warehouseRecord
+        });
+    } catch (error) {
+        console.error('Error in Add File:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error in getting data',
             error: error.message
         });
     }
