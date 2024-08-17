@@ -247,12 +247,8 @@ const Warehouse = () => {
                 toast.success(data?.message);
                 setAddFileModal(false);
                 // Reset state values only if the API call is successful
-                setBoxNumber("");
-                setShelfNumber("");
-                setRackNumber("");
                 setSelectedCSA("");
                 setSelectedBarcode("");
-                setFloorNumber("");
             } else {
                 toast.error(data?.message);
             }
