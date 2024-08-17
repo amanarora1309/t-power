@@ -124,10 +124,7 @@ const Warehouse = () => {
         setSelectedCSA(selectedOption);
         getFileData(selectedOption);
         getOldDataWithSameCsa(selectedOption);
-        setBoxNumber("")
-        setShelfNumber("")
-        setRackNumber("")
-        setFloorNumber("")
+
         setCsaOldRecord(null);
         setFileData(null);
     };
@@ -137,10 +134,7 @@ const Warehouse = () => {
         setSelectedCSA(selectedOption);
         getFileData(selectedOption);
         getOldDataWithSameCsa(selectedOption);
-        setBoxNumber("")
-        setShelfNumber("")
-        setRackNumber("")
-        setFloorNumber("")
+
         setCsaOldRecord(null);
         setFileData(null);
     }
@@ -158,7 +152,7 @@ const Warehouse = () => {
         }
         else {
 
-            if (csaOldRecord) {
+            if (csaOldRecord.length > 0) {
                 setBoxNumber(csaOldRecord[0]?.boxNumber);
                 setShelfNumber(csaOldRecord[0]?.shelfNumber);
                 setRackNumber(csaOldRecord[0]?.rackNumber);
