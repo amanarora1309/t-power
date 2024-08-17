@@ -1,8 +1,8 @@
-const url = "http://192.168.0.2:8000/"
-export const url2 = "http://192.168.0.2:8000"
+// const url = "http://192.168.0.2:8000/"
+// export const url2 = "http://192.168.0.2:8000"
 
-// const url = "http://localhost:8000/"
-// export const url2 = "http://localhost:8000"
+const url = "http://localhost:8000/"
+export const url2 = "http://localhost:8000"
 
 
 

@@ -44,7 +44,7 @@ const Warehouse = () => {
     const [boxNumber, setBoxNumber] = useState("");
     const [shelfNumber, setShelfNumber] = useState("");
     const [rackNumber, setRackNumber] = useState("");
-    const [floorNumber, setFloorNumber] = useState("");
+    const [floorNumber, setFloorNumber] = useState("1");
     const [fileIssueReason, setFileIssueReason] = useState("");
     const [fileIssueTo, setFileIssueTo] = useState("");
     const [loader, setLoader] = useState(false);
@@ -222,9 +222,9 @@ const Warehouse = () => {
         }
 
         // Update state with validated values before making the API call
-        setShelfNumber(validatedShelfNumber);
-        setRackNumber(validatedRackNumber);
-        setFloorNumber(validatedFloorNumber);
+        // setShelfNumber(validatedShelfNumber);
+        // setRackNumber(validatedRackNumber);
+        // setFloorNumber(validatedFloorNumber);
 
         // Proceed with the API call
         try {
@@ -304,7 +304,6 @@ const Warehouse = () => {
         // Update state with validated values before making the API call
         setShelfNumber(validatedShelfNumber);
         setRackNumber(validatedRackNumber);
-        setFloorNumber(validatedFloorNumber);
         try {
             setLoader(true);
             const data = await returnFile({ boxNumber, shelfNumber, rackNumber, floorNumber, selectedCSA })
@@ -316,7 +315,6 @@ const Warehouse = () => {
                 setShelfNumber("");
                 setRackNumber("");
                 setSelectedCSA("");
-                setFloorNumber("");
             }
             else {
                 toast.error(data?.message)
@@ -507,7 +505,7 @@ const Warehouse = () => {
                                 className='form-control'
                                 placeholder="Enter Floor Number"
                                 value={floorNumber}
-                                onChange={(e) => setFloorNumber(e.target.value)} />
+                                onChange={(e) => setFloorNumber(e.target.value)} readOnly={true} />
                             {!floorNumber && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
 
                         </div>
@@ -515,8 +513,8 @@ const Warehouse = () => {
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button type="button" color="primary" onClick={() => setAddFileModal(false)} className="waves-effect waves-light">Close</Button>{" "}
                     <Button type="button" color="success" onClick={handleAddFileSubmit} className="waves-effect waves-light">Add</Button>{" "}
+                    <Button type="button" color="primary" onClick={() => setAddFileModal(false)} className="waves-effect waves-light">Close</Button>{" "}
                 </Modal.Footer>
             </Modal>
 
@@ -565,7 +563,8 @@ const Warehouse = () => {
                                 className='form-control'
                                 placeholder="Enter Issue to"
                                 value={issueTo}
-                                onChange={(e) => setIssueTo(e.target.value)} />
+                                onChange={(e) => setIssueTo(e.target.value)}
+                            />
                             {!issueTo && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
 
                         </div>
@@ -661,11 +660,14 @@ const Warehouse = () => {
                             Floor Number
                         </label>
                         <div className="col-md-10">
-                            <input type="text"
-                                className='form-control'
+                            <input
+                                type="text"
+                                className="form-control"
                                 placeholder="Enter Floor Number"
                                 value={floorNumber}
-                                onChange={(e) => setFloorNumber(e.target.value)} />
+                                onChange={(e) => setFloorNumber(e.target.value)}
+                                readOnly={true}
+                            />
                             {!floorNumber && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
 
                         </div>
