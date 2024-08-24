@@ -239,6 +239,55 @@ export const getReoprtData = async (req, res) => {
     }
 }
 
+export const getTodayFileEntryData = async (req, res) => {
+    try {
+
+        // Get the start and end of today
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        // Fetch tagging data created today
+        const data = await FileData.findAll({
+            where: {
+                createdAt: {
+                    [Op.between]: [startOfToday, endOfToday]
+                }
+            }
+        });
+        const result = [];
+        for (const d of data) {
+            console.log(d.toJSON());
+            let a = d.toJSON();
+            const taggingData = await Tagging.findAll({ where: { fileDataId: a.id } });
+            if (taggingData.length > 0) {
+                a.tagging = true;
+            }
+            else {
+                a.tagging = false;
+            }
+
+
+            const warehousingData = await Warehouse.findAll({ where: { fileDataId: a.id } });
+            if (warehousingData.length > 0) {
+                a.warehouse = true;
+            }
+            else {
+                a.warehouse = false;
+            }
+
+            result.push(a);
+        }
+
+
+        res.status(200).json({ success: true, message: "Detail data", result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in getting data', error });
+    }
+}
+
 
 
 

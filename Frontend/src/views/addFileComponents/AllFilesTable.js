@@ -121,6 +121,11 @@ const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, s
             </UncontrolledDropdown>
         </td>
     );
+
+    const dateTemplate = (props) => {
+        const date = new Date(props.createdAt);
+        return <span>{date.toLocaleDateString()}</span>;
+    };
     return (
         <>
             <Row>
@@ -173,7 +178,7 @@ const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, s
                                                 <ColumnDirective field='barcode' headerText='Barcode' width='300'></ColumnDirective>
                                                 <ColumnDirective field='typeOfRequest' headerText='Type Of Request' width='300'></ColumnDirective>
                                                 <ColumnDirective field='noOfPages' headerText='No of Pages' width='300'></ColumnDirective>
-                                                <ColumnDirective field='createdAt' headerText='Created At' width='300'></ColumnDirective>
+                                                <ColumnDirective field='createdAt' headerText='Created At' width='300' template={dateTemplate}></ColumnDirective>
                                                 <ColumnDirective
                                                     headerText='Actions'
                                                     width='150'
@@ -199,14 +204,14 @@ const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, s
                                             allowFiltering={true}
                                             filterSettings={filterSettings}
                                             allowPaging={true}
-                                            pageSettings={{ pageSize: 10, pageCount: 5 }}
+                                            pageSettings={{ pageSize: 500, pageCount: 5 }}
                                         >
                                             <ColumnsDirective>
                                                 <ColumnDirective field='CSA' headerText='CSA' width='300'></ColumnDirective>
                                                 <ColumnDirective field='barcode' headerText='Barcode' width='300'></ColumnDirective>
                                                 <ColumnDirective field='typeOfRequest' headerText='Type Of Request' width='300'></ColumnDirective>
                                                 <ColumnDirective field='noOfPages' headerText='No of Pages' width='300'></ColumnDirective>
-                                                <ColumnDirective field='createdAt' headerText='Created At' width='300'></ColumnDirective>
+                                                <ColumnDirective field='createdAt' headerText='Created At' width='300' template={dateTemplate}></ColumnDirective>
                                                 <ColumnDirective
                                                     headerText='Actions'
                                                     width='150'

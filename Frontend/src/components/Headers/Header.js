@@ -23,7 +23,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Card, CardBody, CardTitle, Container, Row, Col } from "reactstrap";
-
+import Warehouse from "views/Warehouse";
+const FILE_ENTRY = "FILE_ENTRY";
+const TAGGING = "TAGGING";
+const WAREHOUSING = "WAREHOUSING";
 const Header = () => {
   const navigate = useNavigate();
 
@@ -186,7 +189,7 @@ const Header = () => {
             </Row>
             <Row className="mt-5">
               <Col lg="6" xl="3">
-                <Card className="card-stats mb-4 mb-xl-0" onClick={() => navigate("/admin/fileEntry")} style={{ cursor: "pointer" }} >
+                <Card className="card-stats mb-4 mb-xl-0" onClick={() => navigate("/admin/dashboard-data/" + FILE_ENTRY)} style={{ cursor: "pointer" }} >
                   <CardBody>
                     <Row>
                       <div className="col">
@@ -216,7 +219,7 @@ const Header = () => {
                 </Card>
               </Col>
               <Col lg="6" xl="3">
-                <Card className="card-stats mb-4 mb-xl-0" onClick={() => navigate("/admin/fileEntry")} style={{ cursor: "pointer" }} >
+                <Card className="card-stats mb-4 mb-xl-0" style={{ cursor: "pointer" }} >
                   <CardBody>
                     <Row>
                       <div className="col">
@@ -226,7 +229,7 @@ const Header = () => {
                         >
                           Today's Tagging
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0"> {todayAnalysisData?.warehouseCount} </span>
+                        <span className="h2 font-weight-bold mb-0"> {todayAnalysisData?.taggingCount} </span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-warning text-white rounded-circle shadow">
@@ -244,7 +247,7 @@ const Header = () => {
                 </Card>
               </Col>
               <Col lg="6" xl="3">
-                <Card className="card-stats mb-4 mb-xl-0" onClick={() => navigate("/admin/fileEntry")} style={{ cursor: "pointer" }} >
+                <Card className="card-stats mb-4 mb-xl-0" style={{ cursor: "pointer" }} >
                   <CardBody>
                     <Row>
                       <div className="col">
@@ -254,7 +257,7 @@ const Header = () => {
                         >
                           Today's Warehousing
                         </CardTitle>
-                        <span className="h2 font-weight-bold mb-0">{todayAnalysisData?.taggingCount}</span>
+                        <span className="h2 font-weight-bold mb-0">{todayAnalysisData?.warehouseCount}</span>
                       </div>
                       <Col className="col-auto">
                         <div className="icon icon-shape bg-yellow text-white rounded-circle shadow">

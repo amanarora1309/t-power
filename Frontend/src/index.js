@@ -30,6 +30,7 @@ import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css';
 import DesignTemplate from "views/DesignTemplate";
 import { registerLicense } from '@syncfusion/ej2-base';
+import DashboardData from "views/DashboardData";
 
 
 registerLicense("Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdnWXdeeHRQR2FYVEB0X0E=")
@@ -38,11 +39,11 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
     <Routes>
+      <Route path="/dashboard-data" element={<DashboardData />} />
       <Route path="/admin/*" element={<AdminLayout />} />
       <Route path="/auth/*" element={<AuthLayout />} />
 
       <Route path="*" element={<Navigate to="/admin/index" replace />} />
-
     </Routes>
     <ToastContainer />
   </BrowserRouter>

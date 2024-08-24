@@ -27,6 +27,7 @@ import Sidebar from "components/Sidebar/Sidebar.js";
 import routes from "routes.js";
 import DesignTemplate from "views/DesignTemplate";
 import Authmiddleware from "middlewares/Authmiddleware";
+import DashboardData from "views/DashboardData";
 
 const Admin = (props) => {
   const mainContent = React.useRef(null);
@@ -88,8 +89,8 @@ const Admin = (props) => {
         <Routes>
 
           {getRoutes(routes)}
+          <Route path="/dashboard-data/:tag" element={<DashboardData />} />
           <Route path="*" element={<Navigate to="/admin/index" replace />} />
-          <Route path="/design-template" element={<DesignTemplate />} />
         </Routes>
         <Container fluid>
           <AdminFooter />

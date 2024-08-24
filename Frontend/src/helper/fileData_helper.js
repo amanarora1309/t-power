@@ -9,3 +9,4 @@ export const getAllFilesData = () => get(url.GET_ALL_FILEDATA);
 export const getFilterFilesData = data => post(url.GET_FILTER_FILES, data);
 export const getFileDetailData = data => post(url.GET_FILE_DETAIL_DATA, data);
 export const getReportData = () => post(url.GET_REPORT_DATA);
+export const getTodayFileEntryData = () => get(url.GET_TODAY_FILE_ENTRY_DATA);

@@ -1,8 +1,8 @@
-const url = "http://192.168.0.2:8000/"
-export const url2 = "http://192.168.0.2:8000"
+// const url = "http://192.168.0.2:8000/"
+// export const url2 = "http://192.168.0.2:8000"
 
-// const url = "http://localhost:8000/"
-// export const url2 = "http://localhost:8000"
+const url = "http://localhost:8000/"
+export const url2 = "http://localhost:8000"
 
 
 
@@ -20,6 +20,8 @@ export const GET_ALL_FILEDATA = url + "getAllFilesData";
 export const GET_FILE_DETAIL_DATA = url + "getFileDetailData";
 export const GET_FILTER_FILES = url + "getFilterFiles";
 export const GET_REPORT_DATA = url + "getReportData";
+export const GET_TODAY_FILE_ENTRY_DATA = url + "getTodayFileEntryData";
+
 
 export const PRINT_BARCODE = url + "printBarcode";
 

@@ -35,6 +35,7 @@ import Tagging from "views/Tagging";
 import AddFile from "views/AddFile";
 import Maintainance from "views/Maintainance";
 import Report from "views/Report";
+import DashboardData from "views/DashboardData";
 
 
 
@@ -51,8 +52,6 @@ var routes = [
     component: <Index />,
     layout: "/admin",
   },
-
-
 
   ...(access?.fileEntryAccess ? [{
     path: "/fileEntry",
