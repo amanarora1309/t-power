@@ -6,7 +6,7 @@ import { toast } from 'react-toastify';
 import { getFilterFilesData } from 'helper/fileData_helper';
 import { getFileDetailData } from 'helper/fileData_helper';
 import { GridComponent, ColumnsDirective, ColumnDirective, Page, Toolbar, Sort, Inject, Filter } from '@syncfusion/ej2-react-grids';
-const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, setTypeOfRequest, setNoOfPages, setDateOfApplication, setBarcode, setCollectionPoint, files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal, setUpdateModal }) => {
+const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointData, setCSANumber, setTypeOfRequest, setNoOfPages, setDateOfApplication, setBarcode, setCollectionPoint, files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal, setUpdateModal }) => {
     const [selectedDays, setSelectedDays] = useState("");
     const [filterFiles, setFilterFiles] = useState([]);
     const filterSettings = { type: 'Excel' };
@@ -68,7 +68,11 @@ const AllFilesTable = ({ setSelectedFileId, collectionPointData, setCSANumber, s
             setUpdateModal(true)
             setCSANumber(d?.CSA);
             setBarcode(d?.barcode);
-            setTypeOfRequest(d?.typeOfRequest);
+            typeOfRequestData.forEach(data => {
+                if (data.name.toLowerCase() === d?.typeOfRequest.toLowerCase()) {
+                    setTypeOfRequest(data);
+                }
+            });
             setNoOfPages(d?.noOfPages)
 
             const dateStr = d.dateOfApplication;

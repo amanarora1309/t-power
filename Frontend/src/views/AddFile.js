@@ -70,18 +70,31 @@ const AddFile = () => {
 
     ];
 
+    const typeOfRequestData = [
+        { id: 1, name: "Name Change" },
+        { id: 2, name: "New Connection" },
+        { id: 3, name: "Shifting" },
+        { id: 4, name: "Category Change" },
+        { id: 5, name: "Extension/Reduction" },
+        { id: 6, name: "Service Removal" },
+        { id: 7, name: "Long Term Support" },
+        { id: 8, name: "Seen On" },
+        { id: 9, name: "Address Correction" },
+        { id: 10, name: "Solar" },
+
+    ];
+
 
     const handleSave = async () => {
         let CSA = CSANumber;
         try {
             let collPoint = collectionPoint.name;
             setLoader(true);
-            const data = await saveFileData({ CSA, typeOfRequest, noOfPages, dateOfApplication, barcode, collPoint })
+            const data = await saveFileData({ CSA, typeOfRequest: typeOfRequest.name, noOfPages, dateOfApplication, barcode, collPoint })
             setLoader(false);
             if (data?.success) {
                 toast.success(data?.message);
                 setCSANumber("");
-                setTypeOfRequest("");
                 setNoOfPages("");
                 // setDateOfApplication("");
                 setBarcode("");
@@ -103,12 +116,11 @@ const AddFile = () => {
 
             console.log("collPoint", collectionPoint)
             setLoader(true);
-            const data = await updateFileData({ CSA, typeOfRequest, noOfPages, dateOfApplication, barcode, collPoint, selectedFileId })
+            const data = await updateFileData({ CSA, typeOfRequest: typeOfRequest.name, noOfPages, dateOfApplication, barcode, collPoint, selectedFileId })
             setLoader(false);
             if (data?.success) {
                 toast.success(data?.message);
                 setCSANumber("");
-                setTypeOfRequest("");
                 setNoOfPages("");
                 // setDateOfApplication("");
                 setBarcode("");
@@ -199,7 +211,7 @@ const AddFile = () => {
                 ) : ("")}
                 {allFilesDisplay
                     ?
-                    <AllFilesTable setSelectedFileId={setSelectedFileId} collectionPointData={collectionPointData} setCSANumber={setCSANumber} setTypeOfRequest={setTypeOfRequest} setNoOfPages={setNoOfPages} setDateOfApplication={setDateOfApplication} setBarcode={setBarcode} setCollectionPoint={setCollectionPoint} files={files} setUpdateModal={setUpdateModal} setFiles={setFiles} setDownloadModal={setDownloadModal} setModalShow={setModalShow} setFileDetailData={setFileDetailData} setLoader={setLoader} setAllFilesDisplay={setAllFilesDisplay} />
+                    <AllFilesTable typeOfRequestData={typeOfRequestData} setSelectedFileId={setSelectedFileId} collectionPointData={collectionPointData} setCSANumber={setCSANumber} setTypeOfRequest={setTypeOfRequest} setNoOfPages={setNoOfPages} setDateOfApplication={setDateOfApplication} setBarcode={setBarcode} setCollectionPoint={setCollectionPoint} files={files} setUpdateModal={setUpdateModal} setFiles={setFiles} setDownloadModal={setDownloadModal} setModalShow={setModalShow} setFileDetailData={setFileDetailData} setLoader={setLoader} setAllFilesDisplay={setAllFilesDisplay} />
                     :
                     <Row>
                         <div className="col">
@@ -258,12 +270,16 @@ const AddFile = () => {
                                             Type of Request
                                         </label>
                                         <div className="col-md-10">
-                                            <input type="text"
-                                                className='form-control'
-                                                placeholder="Enter Type of Request"
+                                            <Select
+                                                onChange={(selectedOption) => setTypeOfRequest(selectedOption)}
+                                                options={typeOfRequestData}
+                                                getOptionLabel={(option) => option?.name}
+                                                getOptionValue={(option) => option?.id?.toString()}
+                                                classNamePrefix="select2-selection"
                                                 value={typeOfRequest}
-                                                onChange={(e) => setTypeOfRequest(e.target.value)}
-                                                style={{ color: "black" }} />
+
+                                            />
+
                                             {!typeOfRequest && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                         </div>
                                     </Row>
@@ -539,12 +555,15 @@ const AddFile = () => {
                             Type of Request
                         </label>
                         <div className="col-md-10">
-                            <input type="text"
-                                className='form-control'
-                                placeholder="Enter Type of Request"
+                            <Select
+                                onChange={(selectedOption) => setTypeOfRequest(selectedOption)}
+                                options={typeOfRequestData}
+                                getOptionLabel={(option) => option?.name}
+                                getOptionValue={(option) => option?.id?.toString()}
+                                classNamePrefix="select2-selection"
                                 value={typeOfRequest}
-                                onChange={(e) => setTypeOfRequest(e.target.value)}
-                                style={{ color: "black" }} />
+
+                            />
                             {!typeOfRequest && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                         </div>
                     </Row>
