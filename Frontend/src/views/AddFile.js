@@ -81,6 +81,8 @@ const AddFile = () => {
         { id: 8, name: "Seen On" },
         { id: 9, name: "Address Correction" },
         { id: 10, name: "Solar" },
+        { id: 11, name: "PD Service" },
+        { id: 12, name: "Online File" },
 
     ];
 
