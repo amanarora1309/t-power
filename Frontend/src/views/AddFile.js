@@ -83,6 +83,10 @@ const AddFile = () => {
         { id: 10, name: "Solar" },
         { id: 11, name: "PD Service" },
         { id: 12, name: "Online File" },
+        { id: 13, name: "Long Term Temporary" },
+        { id: 14, name: "PDC on Account" },
+        { id: 15, name: "YSRD" },
+        { id: 16, name: "Complaint" },
 
     ];
 

@@ -331,11 +331,12 @@ const Report = () => {
                                                 ref={treegridInstance}
                                                 treeColumnIndex={0}  // The index of the column that will be used for hierarchical data
                                                 childMapping="subData"  // Map the child data field
-                                                height="350"
+                                                height="600"
                                                 allowPaging={true}
                                                 toolbar={toolbarOptions}
                                                 style={{ width: '100%' }}
                                                 className="table table-bordered table-striped" // Bootstrap table classes
+                                                pageSettings={{ pageSize: 40 }}
                                             >
                                                 <ColumnsDirective>
                                                     <ColumnDirective
