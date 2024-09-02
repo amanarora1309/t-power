@@ -36,6 +36,8 @@ import {
     UncontrolledTooltip,
     Button,
 } from "reactstrap";
+
+import { Modal } from "react-bootstrap";
 import NormalHeader from "components/Headers/NormalHeader";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "react-toastify";
@@ -44,6 +46,7 @@ import { TreeGridComponent, ColumnsDirective, ColumnDirective, Inject, Filter, P
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import PropertyPane from "components/Report/PropertyPane";
 import Loader from "components/Loader/Loader";
+import { EXPORT_REPORT_DATA } from "helper/url_helper";
 
 let sampleData = [
     {
@@ -260,9 +263,10 @@ let sampleData = [
 const Report = () => {
     const [reportData, setReportData] = useState([]);
     const [loader, setLoader] = useState(false)
-
-
-
+    const [downloadReportDataModal, setDowloadReportDataModal] = useState(false);
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [spanDisplay, setSpanDisplay] = useState("none");
 
     const fetchReportData = async () => {
         try {
@@ -306,6 +310,41 @@ const Report = () => {
         const year = date.getFullYear();
         return `${day}/${month}/${year}`;
     };
+
+    const handleDownloadReportFile = async () => {
+        try {
+            if (!startDate || !endDate) {
+                setSpanDisplay("inline");
+            }
+            else {
+                const response = await fetch(EXPORT_REPORT_DATA, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ startDate, endDate })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'Report_Data_' + startDate + "_To_" + endDate;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    setStartDate("")
+                    setEndDate("")
+                    setDowloadReportDataModal(false)
+                } else {
+                    console.error('Error generating Excel file');
+                }
+            }
+        } catch (error) {
+            toast.error(error?.response?.data?.message);
+        }
+    }
     return (
         <>
             <NormalHeader />
@@ -319,6 +358,15 @@ const Report = () => {
                     <div className="col">
                         <Card className="shadow">
                             {/* Table */}
+                            <CardHeader className="border-0">
+
+                                <div className="d-flex justify-content-between mb-2">
+                                    <h3 className="mt-2">Report Data</h3>
+                                    <Button className="" color="primary" type="button" onClick={() => setDowloadReportDataModal(true)}>
+                                        Download Data
+                                    </Button>
+                                </div>
+                            </CardHeader>
                             <Row>
 
 
@@ -375,7 +423,66 @@ const Report = () => {
                         </Card>
                     </div>
                 </Row>
-            </Container>
+            </Container >
+
+            {/* Modal for Download Data  */}
+            <Modal
+                show={downloadReportDataModal}
+                size="lg"
+                aria-labelledby="contained-modal-title-vcenter"
+                centered
+            >
+                <Modal.Header >
+                    <Modal.Title id="contained-modal-title-vcenter">
+                        Download Data File
+                    </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+
+
+                    <Row className="mb-3">
+                        <label
+                            htmlFor="example-text-input"
+                            className="col-md-2 col-form-label"
+                        >
+                            Select Start Date
+                        </label>
+                        <div className="col-md-10">
+                            <input type="date"
+                                className='form-control'
+                                placeholder="Select Start Date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)} />
+                            {!startDate && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
+
+                        </div>
+                    </Row>
+                    <Row className="mb-3">
+                        <label
+                            htmlFor="example-text-input"
+                            className="col-md-2 col-form-label"
+                        >
+                            Select End Date
+                        </label>
+                        <div className="col-md-10">
+                            <input type="date"
+                                className='form-control'
+                                placeholder="Select End Date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)} />
+                            {!endDate && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
+
+                        </div>
+                    </Row>
+
+
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button type="button" color="primary" onClick={() => setDowloadReportDataModal(false)} className="waves-effect waves-light">Close</Button>{" "}
+                    <Button type="button" color="success" onClick={handleDownloadReportFile} className="waves-effect waves-light">Download</Button>{" "}
+
+                </Modal.Footer>
+            </Modal>
 
         </>
     );

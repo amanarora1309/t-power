@@ -1,10 +1,12 @@
 import FileData from '../models/FileData.js';
 import bwipjs from 'bwip-js';
-import fs from 'fs/promises';
+import fs from 'fs';
 import { Op } from 'sequelize';
 import Tagging from '../models/tagging.js';
 import Warehouse from '../models/warehouse.js';
 import sequelize from '../utils/db.js';
+import xlsx from 'xlsx';
+import path from 'path';
 
 export const saveFileDataController = async (req, res) => {
     const { CSA, noOfPages, typeOfRequest, dateOfApplication, barcode, collPoint } = req.body;
@@ -231,6 +233,7 @@ export const getReoprtData = async (req, res) => {
 
         // Sort the data by date in descending order (latest date first)
         result.sort((a, b) => b.Date - a.Date);
+        console.log(result[0]);
         // Send the formatted data as a response
         res.status(200).json({ success: true, message: "Reoprt Data", result: result });
     } catch (error) {
@@ -285,6 +288,140 @@ export const getTodayFileEntryData = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: 'Error in getting data', error });
+    }
+}
+
+export const exportReportData = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.body;
+
+        const fileData = await FileData.findAll({
+            attributes: [
+                'dateOfApplication',
+                'collectionPoint',
+                [sequelize.fn('COUNT', sequelize.col('id')), 'fileCount'],
+                [sequelize.fn('SUM', sequelize.col('noOfPages')), 'totalPages']
+            ],
+            group: ['dateOfApplication', 'collectionPoint'],
+            raw: true,
+            where: {
+                createdAt: {
+                    [Op.between]: [startDate, endDate]
+                }
+            }
+        });
+
+        // Process data to group by date
+        const groupedData = fileData.reduce((acc, item) => {
+            const date = item.dateOfApplication instanceof Date
+                ? item.dateOfApplication.toISOString().split('T')[0]
+                : new Date(item.dateOfApplication).toISOString().split('T')[0];
+
+            if (!acc[date]) {
+                acc[date] = {
+                    Date: new Date(date),
+                    subData: []
+                };
+            }
+
+            // Aggregate total files and pages for each date
+            acc[date].subData.push({
+                collectionPoint: item.collectionPoint || "",
+                files: parseInt(item.fileCount, 10),
+                totalPages: parseInt(item.totalPages, 10),
+                priority: 'Normal',
+                approved: false
+            });
+
+            return acc;
+        }, {});
+
+        // Convert the object to an array
+        const result = Object.values(groupedData);
+
+        // Sort the data by date in descending order (latest date first)
+        result.sort((a, b) => b.Date - a.Date);
+
+        // Initialize the workbook and worksheet data
+        const wb = xlsx.utils.book_new();
+        const ws_data = [
+            ["S no.", "Date", "Jaipur House", "", "Pratap Pura", "", "Sanjay Palace", "", "Total Files", "Total Pages"],
+            ["", "", "File Record", "Pages", "File Record", "Pages", "File Record", "Pages", "", ""]
+        ];
+
+        // Fill the worksheet data dynamically
+        result.forEach((item, index) => {
+            const row = [index + 1, item.Date.toISOString().split('T')[0]];
+            const collectionPoints = ["Jaipur House", "Pratap Pura", "Sanjay Palace"];
+
+            let totalFiles = 0;
+            let totalPages = 0;
+
+            collectionPoints.forEach(point => {
+                const subDataEntry = item.subData.find(sub => sub.collectionPoint === point);
+                if (subDataEntry) {
+                    row.push(subDataEntry.files, subDataEntry.totalPages);
+                    totalFiles += subDataEntry.files;
+                    totalPages += subDataEntry.totalPages;
+                } else {
+                    row.push(0, 0);
+                }
+            });
+
+            row.push(totalFiles, totalPages);
+            ws_data.push(row);
+        });
+
+        // Create a worksheet and apply styles
+        const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+        // Apply merge and style
+        ws['!merges'] = [
+            { s: { r: 0, c: 2 }, e: { r: 0, c: 3 } }, // Merges "Jaipur House" and the next column
+            { s: { r: 0, c: 4 }, e: { r: 0, c: 5 } }, // Merges "Pratap Pura" and the next column
+            { s: { r: 0, c: 6 }, e: { r: 0, c: 7 } }  // Merges "Sanjay Palace" and the next column
+        ];
+
+        // Style the merged cells
+        const centerStyle = {
+            alignment: { horizontal: 'center', vertical: 'center' }
+        };
+
+        ws['A1'].s = centerStyle;
+        ws['B1'].s = centerStyle;
+        ws['C1'].s = centerStyle;
+        ws['D1'].s = centerStyle;
+        ws['E1'].s = centerStyle;
+        ws['F1'].s = centerStyle;
+        ws['G1'].s = centerStyle;
+        ws['H1'].s = centerStyle;
+        ws['I1'].s = centerStyle;
+        ws['J1'].s = centerStyle;
+
+        xlsx.utils.book_append_sheet(wb, ws, "Sheet1");
+
+        // Generate Excel file and send it to the frontend
+        const filePath = path.join('output_sample.xlsx');
+        xlsx.writeFile(wb, filePath);
+
+        res.download(filePath, 'output_sample.xlsx', (err) => {
+            if (err) {
+                console.error('Error sending the file:', err);
+                res.status(500).send('Error generating file');
+            } else {
+                // Optionally delete the file after sending
+                fs.unlink(filePath, (err) => {
+                    if (err) {
+                        console.error('Error deleting the file:', err);
+                    } else {
+                        console.log('File deleted successfully');
+                    }
+                });
+            }
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in getting report data', error });
     }
 }
 
