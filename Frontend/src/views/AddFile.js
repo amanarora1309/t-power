@@ -86,7 +86,14 @@ const AddFile = () => {
         { id: 13, name: "Long Term Temporary" },
         { id: 14, name: "PDC on Account" },
         { id: 15, name: "YSRD" },
-        { id: 16, name: "Complaint" },
+        { id: 17, name: "Complaint" },
+        { id: 18, name: "Service Removal" },
+        { id: 19, name: "Load Extension" },
+        { id: 20, name: "Long Term New Connection" },
+        { id: 21, name: "Category Change" },
+        { id: 22, name: "Old Reconnection Application" },
+        { id: 23, name: "Shifting" },
+
 
     ];
 

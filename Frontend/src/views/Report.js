@@ -47,6 +47,9 @@ import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import PropertyPane from "components/Report/PropertyPane";
 import Loader from "components/Loader/Loader";
 import { EXPORT_REPORT_DATA } from "helper/url_helper";
+import { DUMP_DATABASE } from "helper/url_helper";
+import axios from "axios";
+import { url2 } from "helper/url_helper";
 
 let sampleData = [
     {
@@ -345,6 +348,36 @@ const Report = () => {
             toast.error(error?.response?.data?.message);
         }
     }
+
+
+    const handleDownload = async () => {
+        try {
+            setLoader(true);
+            // Make a GET request to the backend to get the dump file
+
+            const response = await axios({
+                url: DUMP_DATABASE, // Adjust to your backend API URL
+                method: 'GET',
+                responseType: 'blob', // Important for downloading files
+            });
+
+            // Create a URL for the blob object
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'database_dump.sql'); // Filename for download
+            document.body.appendChild(link);
+            link.click();
+
+            // Cleanup
+            link.remove();
+        } catch (error) {
+            console.error('Error downloading the database dump:', error);
+            toast.error('Error downloading the database dump');
+        } finally {
+            setLoader(false);
+        }
+    };
     return (
         <>
             <NormalHeader />
@@ -362,9 +395,15 @@ const Report = () => {
 
                                 <div className="d-flex justify-content-between mb-2">
                                     <h3 className="mt-2">Report Data</h3>
-                                    <Button className="" color="primary" type="button" onClick={() => setDowloadReportDataModal(true)}>
-                                        Download Data
-                                    </Button>
+                                    <div className="d-flex">
+
+                                        <Button className="" color="primary" type="button" onClick={handleDownload}>
+                                            Create Dump Mysql Data
+                                        </Button>
+                                        <Button className="" color="primary" type="button" onClick={() => setDowloadReportDataModal(true)}>
+                                            Download Data
+                                        </Button>
+                                    </div>
                                 </div>
                             </CardHeader>
                             <Row>

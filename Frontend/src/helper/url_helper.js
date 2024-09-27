@@ -1,11 +1,11 @@
-const url = "http://192.168.0.2:8000/"
-export const url2 = "http://192.168.0.2:8000"
+// const url = "http://192.168.0.2:8000/"
+// export const url2 = "http://192.168.0.2:8000"
 
 // const url = "http://192.168.1.17:8000/"
 // export const url2 = "http://192.168.1.17:8000"
 
-// const url = "http://localhost:8000/"
-// export const url2 = "http://localhost:8000"
+const url = "http://localhost:8000/"
+export const url2 = "http://localhost:8000"
 
 
 
@@ -45,6 +45,8 @@ export const GET_WAREHOUSING_RECORD = url + "getWarehousingRecord";
 export const CREATE_PDF_FROM_IMAGES = url + "convertImagesToPdf";
 export const CREATE_PDF_FROM_IMAGES_REPLACE = url + "convertImagesToPdfReplace";
 
+
+export const DUMP_DATABASE = url + "downloadDatabaseData";
 
 export const DELETE_DIRECTORY = url + "deleteDirectory";
 export const DELETE_PDF = url + "deletePdf";
