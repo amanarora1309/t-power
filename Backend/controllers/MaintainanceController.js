@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import mysqldump from 'mysqldump';
 import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -70,6 +71,7 @@ export const deletePdfController = async (req, res) => {
         res.status(500).json({ success: false, message: 'Error in delete pdf', error });
     }
 };
+
 export const getDetailsController = async (req, res) => {
     try {
         const { date, csa } = req.body;
@@ -97,5 +99,37 @@ export const getDetailsController = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({ success: false, message: 'Error in Fetch Details', error });
+    }
+}
+
+
+export const downloadDatabaseData = async (req, res) => {
+    try {
+        const dumpPath = path.join(__dirname, 'db-dump.sql');
+
+        // Dump the database
+        await mysqldump({
+            connection: {
+                host: 'localhost',
+                user: 'root',
+                password: 'root',
+                database: 'torrentpower',
+            },
+            dumpToFile: dumpPath,
+        });
+
+        // Send the dump file as a response for download
+        res.download(dumpPath, 'database_dump.sql', (err) => {
+            if (err) {
+                console.error('Error sending dump file:', err);
+                res.status(500).send('Error downloading the file.');
+            }
+
+            // Optionally, delete the file after download to clean up
+            fs.unlinkSync(dumpPath);
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in Downloading Data', error });
     }
 }
