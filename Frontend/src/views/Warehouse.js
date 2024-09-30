@@ -327,6 +327,16 @@ const Warehouse = () => {
 
     }
 
+    const customFilterOption = (option, searchInput) => {
+        if (!searchInput) return true; // Show all options when search input is empty
+
+        const searchTerm = searchInput.toLowerCase();
+        const optionValue = option.data.barcode.toLowerCase();
+
+        // Prioritize options that start with the search term, followed by others
+        return optionValue.startsWith(searchTerm);
+    };
+
     return (
         <>
             <NormalHeader />
@@ -351,14 +361,18 @@ const Warehouse = () => {
                                     </label>
                                     <div className="col-md-10">
                                         <Select
-
                                             value={selectedBarcode}
                                             onChange={handleBarcodeChange}
-                                            options={CSAData}
-                                            getOptionLabel={option => option?.barcode}
-                                            getOptionValue={option => option?.id?.toString()} // Convert to string if classId is a number
+                                            options={
+                                                CSAData
+                                                    .sort((a, b) => a.barcode.localeCompare(b.barcode)) // Sort options in ascending order
+                                            }
+                                            filterOption={customFilterOption} // Custom filter for sorting by search input
+                                            getOptionLabel={(option) => option?.barcode}
+                                            getOptionValue={(option) => option?.id?.toString()} // Convert to string if id is a number
                                             classNamePrefix="select2-selection"
                                         />
+
                                         {!selectedBarcode && <span style={{ color: "red", display: spanDisplay }}>This feild is required</span>}
                                     </div>
                                 </Row>
