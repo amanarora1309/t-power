@@ -43,6 +43,15 @@ const AddFile = () => {
     const [collectionPoint, setCollectionPoint] = useState("");
     const [updateModal, setUpdateModal] = useState(false);
     const [selectedFileId, setSelectedFileId] = useState("");
+    const barcodeInputRef = useRef(null);
+    const dataRef = useRef({
+        CSANumber,
+        barcode,
+        typeOfRequest,
+        noOfPages,
+        dateOfApplication,
+        collectionPoint
+    });
     const fetchAllFiles = async () => {
         try {
             const data = await getAllFilesData();
@@ -96,18 +105,18 @@ const AddFile = () => {
 
 
     const handleSave = async () => {
-        let CSA = CSANumber;
+        const { CSANumber, barcode, typeOfRequest, noOfPages, dateOfApplication, collectionPoint } = dataRef.current;
+
         try {
-            let collPoint = collectionPoint.name;
             setLoader(true);
-            const data = await saveFileData({ CSA, typeOfRequest: typeOfRequest.name, noOfPages, dateOfApplication, barcode, collPoint })
+            const data = await saveFileData({ CSA: CSANumber, typeOfRequest: typeOfRequest.name, noOfPages, dateOfApplication, barcode, collPoint: collectionPoint.name })
             setLoader(false);
             if (data?.success) {
                 toast.success(data?.message);
                 setCSANumber("");
                 setNoOfPages("");
-                // setDateOfApplication("");
                 setBarcode("");
+                barcodeInputRef.current.focus();
                 fetchAllFiles();
             }
             else {
@@ -212,6 +221,36 @@ const AddFile = () => {
         }
     }
 
+    useEffect(() => {
+        // Update ref whenever state changes
+        dataRef.current = {
+            CSANumber,
+            barcode,
+            typeOfRequest,
+            noOfPages,
+            dateOfApplication,
+            collectionPoint
+        };
+    }, [CSANumber, barcode, typeOfRequest, noOfPages, dateOfApplication, collectionPoint]);
+
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.altKey && event.key === 's') {
+                event.preventDefault(); // Prevent the default behavior (if any)
+
+
+                handleSave();
+            }
+        };
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
     return (
         <>
             <NormalHeader />
@@ -246,6 +285,7 @@ const AddFile = () => {
                                                 type="text"
                                                 className='form-control'
                                                 value={barcode}
+                                                ref={barcodeInputRef}
                                                 placeholder="Scan barcode here"
                                                 onChange={handleChange}
                                                 autoFocus // Automatically focus the input field when the component mounts
@@ -353,7 +393,6 @@ const AddFile = () => {
                                         </Button>
                                     </div>
 
-                                    {barcodeUrl && <img src={barcodeUrl} alt="Generated Barcode" />}
                                 </CardHeader>
 
                             </Card>
