@@ -293,8 +293,9 @@ export const getTodayFileEntryData = async (req, res) => {
 
 export const exportReportData = async (req, res) => {
     try {
-        const { startDate, endDate } = req.body;
-
+        let { startDate, endDate } = req.body;
+        const adjustedEndDate = new Date(endDate);
+        adjustedEndDate.setDate(adjustedEndDate.getDate() + 1);
         const fileData = await FileData.findAll({
             attributes: [
                 'dateOfApplication',
@@ -306,7 +307,11 @@ export const exportReportData = async (req, res) => {
             raw: true,
             where: {
                 createdAt: {
-                    [Op.between]: [startDate, endDate]
+                    [Op.gte]: startDate,
+                    [Op.lt]: adjustedEndDate // Use Op.lt with the adjusted end date to include the entire end date
+                },
+                barcode: {
+                    [Op.gt]: 100000 // Only include fileData with barcode greater than 100,000
                 }
             }
         });
