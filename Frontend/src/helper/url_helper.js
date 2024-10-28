@@ -25,6 +25,9 @@ export const GET_FILTER_FILES = url + "getFilterFiles";
 export const GET_REPORT_DATA = url + "getReportData";
 export const GET_TODAY_FILE_ENTRY_DATA = url + "getTodayFileEntryData";
 export const EXPORT_REPORT_DATA = url + "exportReportData";
+export const GET_SEARCH_FILE_DATA = url + "getSearchFileData";
+export const GET_FILE_FROM_BARCODE = url + "getFileFromBarcode";
+export const GET_FILE_FROM_CSA = url + "getFileFromCSA";
 
 export const PRINT_BARCODE = url + "printBarcode";
 

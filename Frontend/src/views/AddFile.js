@@ -19,6 +19,8 @@ import { DOWNLOAD_DATA_CSV } from "helper/url_helper";
 import { DOWNLOAD_PDF } from "helper/url_helper";
 import Select from "react-select"
 import { updateFileData } from "helper/fileData_helper";
+import { GET_ALL_FILEDATA } from "helper/url_helper";
+import { GET_SEARCH_FILE_DATA } from "helper/url_helper";
 
 
 
@@ -35,6 +37,7 @@ const AddFile = () => {
     const [barcode, setBarcode] = useState('');
     const [allFilesDisplay, setAllFilesDisplay] = useState(true);
     const [files, setFiles] = useState([]);
+
     const [fileDetailData, setFileDetailData] = useState({});
     const [modalShow, setModalShow] = useState(false);
     const [downloadModal, setDownloadModal] = useState(false);
@@ -52,19 +55,33 @@ const AddFile = () => {
         dateOfApplication,
         collectionPoint
     });
-    const fetchAllFiles = async () => {
-        try {
-            const data = await getAllFilesData();
-            if (data?.success) {
-                setFiles(data?.data);
-            }
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [pageSize, setPageSize] = useState(10);
+    const [totalRecords, setTotalRecords] = useState(0);
+    const fetchAllFiles = async (pageNumber = 1, pageSize = 10) => {
+        try {
+            const { data } = await axios.get(GET_ALL_FILEDATA, {
+                params: { pageNumber, pageSize }
+            });
+            if (data?.success) {
+                console.log(data?.data);
+                setFiles(data?.data);
+                setTotalRecords(data.totalRecords); // Store the total records for pagination
+            }
         } catch (error) {
             console.log(error);
             toast.error(error?.response?.data?.message)
         }
     }
 
+    useEffect(() => {
+        fetchAllFiles(currentPage, pageSize);
+    }, [currentPage, pageSize]);
+
+    const handlePageChange = (event) => {
+        setCurrentPage(event.page);
+    };
 
 
     useEffect(() => {
@@ -260,7 +277,7 @@ const AddFile = () => {
                 ) : ("")}
                 {allFilesDisplay
                     ?
-                    <AllFilesTable typeOfRequestData={typeOfRequestData} setSelectedFileId={setSelectedFileId} collectionPointData={collectionPointData} setCSANumber={setCSANumber} setTypeOfRequest={setTypeOfRequest} setNoOfPages={setNoOfPages} setDateOfApplication={setDateOfApplication} setBarcode={setBarcode} setCollectionPoint={setCollectionPoint} files={files} setUpdateModal={setUpdateModal} setFiles={setFiles} setDownloadModal={setDownloadModal} setModalShow={setModalShow} setFileDetailData={setFileDetailData} setLoader={setLoader} setAllFilesDisplay={setAllFilesDisplay} />
+                    <AllFilesTable setCurrentPage={setCurrentPage} pageSize={pageSize} totalRecords={totalRecords} currentPage={currentPage} handlePageChange={handlePageChange} typeOfRequestData={typeOfRequestData} setSelectedFileId={setSelectedFileId} collectionPointData={collectionPointData} setCSANumber={setCSANumber} setTypeOfRequest={setTypeOfRequest} setNoOfPages={setNoOfPages} setDateOfApplication={setDateOfApplication} setBarcode={setBarcode} setCollectionPoint={setCollectionPoint} files={files} setUpdateModal={setUpdateModal} setFiles={setFiles} setDownloadModal={setDownloadModal} setModalShow={setModalShow} setFileDetailData={setFileDetailData} setLoader={setLoader} setAllFilesDisplay={setAllFilesDisplay} />
                     :
                     <Row>
                         <div className="col">

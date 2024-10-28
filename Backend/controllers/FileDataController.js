@@ -118,18 +118,86 @@ export const UpdateFileDataController = async (req, res) => {
 
 export const getAllFilesDataController = async (req, res) => {
     try {
-        const result = await FileData.findAll();
+        const pageNumber = parseInt(req.query.pageNumber) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
 
+        // Fetch the data based on pagination
+        const { count: totalFiles, rows: files } = await FileData.findAndCountAll({
+            limit: pageSize,
+            offset: (pageNumber - 1) * pageSize,
+        });
 
-
-
-        res.status(200).json({ success: true, message: "All files data", data: result });
+        res.status(200).json({
+            success: true,
+            message: "All files data",
+            data: files,
+            totalRecords: totalFiles, // Send total count for pagination
+        });
     } catch (error) {
         console.error('Error fetching files:', error);
         res.status(500).json({ success: false, message: 'Error in fetching files', error });
     }
 }
 
+
+
+export const searchFilesController = async (req, res) => {
+    try {
+        const searchQuery = req.query.search || ''; // Get the search query from request
+        const pageNumber = parseInt(req.query.pageNumber) || 1;
+        const pageSize = parseInt(req.query.pageSize) || 10;
+
+        // Fetch the data based on search and pagination
+        const { count: totalFiles, rows: files } = await FileData.findAndCountAll({
+            where: {
+                [Op.or]: [
+                    { CSA: { [Op.like]: `%${searchQuery}%` } },
+                    { barcode: { [Op.like]: `%${searchQuery}%` } },
+                    { typeOfRequest: { [Op.like]: `%${searchQuery}%` } },
+                ],
+            },
+            limit: pageSize,
+            offset: (pageNumber - 1) * pageSize,
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Search results",
+            data: files,
+            totalRecords: totalFiles, // Send total count for pagination
+        });
+    } catch (error) {
+        console.error('Error searching files:', error);
+        res.status(500).json({ success: false, message: 'Error in searching files', error });
+    }
+};
+
+export const searchFilesOnCSAController = async (req, res) => {
+    try {
+        const searchQuery = req.query.search || ''; // Get the search query from request
+
+
+        // Fetch the data based on search and pagination
+        const { rows: files } = await FileData.findAndCountAll({
+            where: {
+                [Op.or]: [
+                    { CSA: { [Op.like]: `%${searchQuery}%` } },
+                    { barcode: { [Op.like]: `%${searchQuery}%` } },
+                ],
+            },
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Search results",
+            data: files,
+            totalRecords: totalFiles, // Send total count for pagination
+        });
+    } catch (error) {
+        console.error('Error searching files:', error);
+        res.status(500).json({ success: false, message: 'Error in searching files', error });
+    }
+};
 
 export const getFileDataBasedOnCondition = async (req, res) => {
 
@@ -151,6 +219,30 @@ export const getFileDataBasedOnCondition = async (req, res) => {
                 }
             }
         });
+        res.status(200).json({ success: true, message: "files based on the filter", data: result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in fetching files', error });
+    }
+}
+
+export const getFileDataFromBarcode = async (req, res) => {
+    try {
+        const { barcode } = req.body;
+        console.log("barcode ", barcode);
+        const result = await FileData.findOne({ where: { barcode: barcode } }); // Use 'findOne' instead of 'findAll'
+        console.log("result ", result);
+        res.status(200).json({ success: true, message: "files based on the filter", data: result });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ success: false, message: 'Error in fetching files', error });
+    }
+}
+
+export const getFileDataFromCSA = async (req, res) => {
+    try {
+        const { CSA } = req.body;
+        const result = await FileData.findOne({ where: { CSA: CSA } }); // Use 'findOne' instead of 'findAll'
         res.status(200).json({ success: true, message: "files based on the filter", data: result });
     } catch (error) {
         console.log(error);

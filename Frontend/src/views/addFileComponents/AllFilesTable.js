@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Button, Card, CardHeader, DropdownItem, DropdownMenu, DropdownToggle, Modal, Row, Table, UncontrolledDropdown } from 'reactstrap'
 import { format, setDate } from 'date-fns';
 import Select from "react-select"
@@ -6,9 +6,17 @@ import { toast } from 'react-toastify';
 import { getFilterFilesData } from 'helper/fileData_helper';
 import { getFileDetailData } from 'helper/fileData_helper';
 import { GridComponent, ColumnsDirective, ColumnDirective, Page, Toolbar, Sort, Inject, Filter } from '@syncfusion/ej2-react-grids';
-const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointData, setCSANumber, setTypeOfRequest, setNoOfPages, setDateOfApplication, setBarcode, setCollectionPoint, files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal, setUpdateModal }) => {
+import axios from 'axios';
+import { GET_SEARCH_FILE_DATA } from 'helper/url_helper';
+const AllFilesTable = ({ setCurrentPage, pageSize, totalRecords, currentPage, handlePageChange, typeOfRequestData, setSelectedFileId, collectionPointData, setCSANumber, setTypeOfRequest, setNoOfPages, setDateOfApplication, setBarcode, setCollectionPoint, files, setFiles, setLoader, setModalShow, setFileDetailData, setAllFilesDisplay, setDownloadModal, setUpdateModal }) => {
     const [selectedDays, setSelectedDays] = useState("");
     const [filterFiles, setFilterFiles] = useState([]);
+    const [files1, setFiles1] = useState([]);
+    const [currentPage1, setCurrentPage1] = useState(1);
+    const [pageSize1] = useState(10);
+    const [totalRecords1, setTotalRecords1] = useState(0);
+    const [search, setSearch] = useState('');
+
     const filterSettings = { type: 'Excel' };
     const toolbarOptions = ['Search'];
 
@@ -130,6 +138,57 @@ const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointDa
         const date = new Date(props.createdAt);
         return <span>{date.toLocaleDateString()}</span>;
     };
+
+    const handleNextPage = () => {
+        if (currentPage < Math.ceil(totalRecords / pageSize)) {
+            setCurrentPage(currentPage + 1);
+        }
+    };
+
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+        }
+    };
+
+    const handleNextPage1 = () => {
+        if (currentPage1 < Math.ceil(totalRecords1 / pageSize1)) {
+            setCurrentPage1(currentPage1 + 1);
+        }
+    };
+
+    const handlePreviousPage1 = () => {
+        if (currentPage1 > 1) {
+            setCurrentPage1(currentPage1 - 1);
+        }
+    };
+    const fetchSearchFiles = async (pageNumber = 1, pageSize = 10) => {
+        try {
+            const { data } = await axios.get(GET_SEARCH_FILE_DATA, {
+                params: { pageNumber, pageSize, search }
+            });
+            if (data?.success) {
+                console.log(data?.data);
+                setFiles1(data?.data);
+                setTotalRecords1(data.totalRecords); // Store the total records for pagination
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message)
+        }
+    }
+
+    useEffect(() => {
+        fetchSearchFiles(currentPage1, pageSize1); // Fetch data on mount or when page/search changes
+    }, [currentPage1]);
+
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value);
+        setCurrentPage(1); // Reset to first page on new search
+    };
+
+
+
     return (
         <>
             <Row>
@@ -139,7 +198,7 @@ const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointDa
                             <div className="d-flex justify-content-between">
                                 <h3 className="mt-2">All Files</h3>
 
-                                <div className="">
+                                {/* <div className="">
                                     <Select
 
                                         value={selectedDays}
@@ -149,7 +208,7 @@ const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointDa
                                         getOptionValue={option => option?.id?.toString()} // Convert to string if classId is a number
                                         classNamePrefix="select2-selection"
                                     />
-                                </div>
+                                </div> */}
 
                                 <div className="">
                                     <Button className="" color="primary" type="button" onClick={() => setAllFilesDisplay(false)}>
@@ -162,20 +221,32 @@ const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointDa
                             </div>
                         </CardHeader>
 
+                        <div className="d-flex justify-content-center">
+                            <input
+                                type="text"
+                                className='form-control w-25 '
+                                placeholder="Search..."
+                                value={search}
+                                onChange={handleSearchChange}
+                            />
+                            <Button className="" color="info" type="button" onClick={() => { fetchSearchFiles(1, pageSize1); setCurrentPage1(1) }}>
+                                Search
+                            </Button>
+                        </div>
 
-                        {filterFiles.length > 0 ?
+                        {search.length > 0 ?
                             <div className="table">
                                 <div className='control-pane'>
                                     <div className='control-section row justify-content-center'>
                                         <GridComponent
-                                            dataSource={filterFiles}
+                                            dataSource={files1}
                                             width="95%"
-                                            toolbar={toolbarOptions}
+                                            // toolbar={toolbarOptions}
                                             allowSorting={true}
-                                            allowFiltering={true}
-                                            filterSettings={filterSettings}
-                                            allowPaging={true}
-                                            pageSettings={{ pageSize: 10, pageCount: 5 }}
+                                            // allowFiltering={true}
+                                            // allowPaging={true}
+                                            // filterSettings={filterSettings}
+                                            pageSettings={{ pageSize: 10, pageCount: 5 }} // Handle page change event
                                         >
                                             <ColumnsDirective>
                                                 <ColumnDirective field='CSA' headerText='CSA' width='300'></ColumnDirective>
@@ -195,36 +266,78 @@ const AllFilesTable = ({ typeOfRequestData, setSelectedFileId, collectionPointDa
                                     </div>
 
                                 </div>
+                                <div className="d-flex justify-content-end mt-2">
+                                    {/* // here create the next and previous buttons for pagination */}
+                                    <button
+                                        onClick={handlePreviousPage1}
+                                        disabled={currentPage1 === 1}
+                                        className="btn btn-primary me-2"
+                                    >
+                                        Previous
+                                    </button>
+                                    <div className='mt-2 mr-2'> <h3> Page {currentPage1} of {Math.ceil(totalRecords1 / pageSize1)} </h3></div>
+                                    <button
+                                        onClick={handleNextPage1}
+                                        disabled={currentPage1 === Math.ceil(totalRecords1 / pageSize1)}
+                                        className="btn btn-primary ms-2"
+                                    >
+                                        Next
+                                    </button>
+                                </div>
                             </div>
                             :
                             <div className="table">
                                 <div className='control-pane'>
                                     <div className='control-section row justify-content-center'>
-                                        <GridComponent
-                                            dataSource={files}
-                                            width="95%"
-                                            toolbar={toolbarOptions}
-                                            allowSorting={true}
-                                            allowFiltering={true}
-                                            filterSettings={filterSettings}
-                                            allowPaging={true}
-                                            pageSettings={{ pageSize: 500, pageCount: 5 }}
+                                        {files.length > 0 && (
+                                            <GridComponent
+                                                dataSource={files}
+                                                width="95%"
+                                                // toolbar={toolbarOptions}
+                                                allowSorting={true}
+                                                // allowFiltering={true}
+                                                // allowPaging={true}
+                                                pageSettings={{
+                                                    pageSize: pageSize,
+                                                    pageCount: Math.ceil(totalRecords / pageSize), // Calculate the total number of pages
+                                                    currentPage: currentPage,
+                                                }}
+                                                pageSettingsChange={handlePageChange} // Handle page change event
+                                            >
+                                                <ColumnsDirective>
+                                                    <ColumnDirective field='CSA' headerText='CSA' width='300'></ColumnDirective>
+                                                    <ColumnDirective field='barcode' headerText='Barcode' width='300'></ColumnDirective>
+                                                    <ColumnDirective field='typeOfRequest' headerText='Type Of Request' width='300'></ColumnDirective>
+                                                    <ColumnDirective field='noOfPages' headerText='No of Pages' width='300'></ColumnDirective>
+                                                    <ColumnDirective field='createdAt' headerText='Created At' width='300' template={dateTemplate}></ColumnDirective>
+                                                    <ColumnDirective
+                                                        headerText='Actions'
+                                                        width='150'
+                                                        template={dropdownTemplate}
+                                                        textAlign='Right'
+                                                    />
+                                                </ColumnsDirective>
+                                                <Inject services={[Toolbar, Page, Sort, Filter]} />
+                                            </GridComponent>
+                                        )}
+                                    </div>
+                                    <div className="d-flex justify-content-end mt-2">
+                                        {/* // here create the next and previous buttons for pagination */}
+                                        <button
+                                            onClick={handlePreviousPage}
+                                            disabled={currentPage === 1}
+                                            className="btn btn-primary me-2"
                                         >
-                                            <ColumnsDirective>
-                                                <ColumnDirective field='CSA' headerText='CSA' width='300'></ColumnDirective>
-                                                <ColumnDirective field='barcode' headerText='Barcode' width='300'></ColumnDirective>
-                                                <ColumnDirective field='typeOfRequest' headerText='Type Of Request' width='300'></ColumnDirective>
-                                                <ColumnDirective field='noOfPages' headerText='No of Pages' width='300'></ColumnDirective>
-                                                <ColumnDirective field='createdAt' headerText='Created At' width='300' template={dateTemplate}></ColumnDirective>
-                                                <ColumnDirective
-                                                    headerText='Actions'
-                                                    width='150'
-                                                    template={dropdownTemplate}
-                                                    textAlign='Right'
-                                                />
-                                            </ColumnsDirective>
-                                            <Inject services={[Toolbar, Page, Sort, Filter]} />
-                                        </GridComponent>
+                                            Previous
+                                        </button>
+                                        <div className='mt-2 mr-2'> <h3> Page {currentPage} of {Math.ceil(totalRecords / pageSize)} </h3></div>
+                                        <button
+                                            onClick={handleNextPage}
+                                            disabled={currentPage === Math.ceil(totalRecords / pageSize)}
+                                            className="btn btn-primary ms-2"
+                                        >
+                                            Next
+                                        </button>
                                     </div>
 
                                 </div>

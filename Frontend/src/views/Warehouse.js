@@ -35,6 +35,8 @@ import { getFileDataFromBarcode } from "helper/warehouse_helper";
 import { getAllFilesData } from "helper/fileData_helper";
 import { getWarehousingRecord } from "helper/warehouse_helper";
 import Loader from "components/Loader/Loader";
+import { getFileFromCSA } from "helper/fileData_helper";
+import { getFileFromBarcode } from "helper/fileData_helper";
 
 const Warehouse = () => {
     const [selectedCSA, setSelectedCSA] = useState("");
@@ -81,8 +83,8 @@ const Warehouse = () => {
         }
     }
     useEffect(() => {
-        fetchUsers();
-        getAllFiles();
+        // fetchUsers();
+        // getAllFiles();
 
     }, []);
 
@@ -129,6 +131,10 @@ const Warehouse = () => {
         setFileData(null);
     };
 
+    const handleCSAInputChange = inputValue => {
+        handleFileSelectFromCSA(inputValue);
+    }
+
     const handleBarcodeChange = selectedOption => {
         setSelectedBarcode(selectedOption);
         setSelectedCSA(selectedOption);
@@ -137,6 +143,9 @@ const Warehouse = () => {
 
         setCsaOldRecord(null);
         setFileData(null);
+    }
+    const handleBarcodeInputChange = inputValue => {
+        handleFileSelectFromBarcode(inputValue);
     }
     const handleSelectUser = selectedOption => {
         setSelectedUser(selectedOption);
@@ -337,6 +346,35 @@ const Warehouse = () => {
         return optionValue.startsWith(searchTerm);
     };
 
+
+    const handleFileSelectFromCSA = async (csa) => {
+        try {
+            const data = await getFileFromCSA({ CSA: csa });
+            if (data?.success) {
+                if (data?.data != null) {
+                    setCSAData([data?.data]);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+    }
+
+    const handleFileSelectFromBarcode = async (barcode) => {
+        try {
+            const data = await getFileFromBarcode({ barcode });
+            if (data?.success) {
+                if (data?.data != null) {
+                    setCSAData([data?.data]);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+    }
+
     return (
         <>
             <NormalHeader />
@@ -363,6 +401,7 @@ const Warehouse = () => {
                                         <Select
                                             value={selectedBarcode}
                                             onChange={handleBarcodeChange}
+                                            onInputChange={handleBarcodeInputChange}
                                             options={
                                                 CSAData
                                                     .sort((a, b) => a.barcode.localeCompare(b.barcode)) // Sort options in ascending order
@@ -388,6 +427,7 @@ const Warehouse = () => {
 
                                             value={selectedCSA}
                                             onChange={handleSelectCSA}
+                                            onInputChange={handleCSAInputChange}
                                             options={CSAData}
                                             getOptionLabel={option => option?.CSA}
                                             getOptionValue={option => option?.id?.toString()} // Convert to string if classId is a number

@@ -21,6 +21,8 @@ import { DOWNLOAD_ZIP_FILE } from "helper/url_helper";
 import { EXTRACT_PDF } from "helper/url_helper";
 import { url2 } from "helper/url_helper";
 import { createPdfFromImagesReplace } from "helper/tagging_helper";
+import { getFileFromBarcode } from "helper/fileData_helper";
+import { getFileFromCSA } from "helper/fileData_helper";
 
 
 
@@ -49,21 +51,7 @@ const Tagging = () => {
     const [confirmModal, setConfirmModal] = useState(false);
 
     const fileInputRef = useRef(null);
-    const getAllFiles = async () => {
-        try {
-            const data = await getAllFilesData();
-            if (data?.success) {
-                setCSAData(data?.data)
-            }
-        } catch (error) {
-            console.log(error);
-            toast.error("Something went wrong");
-        }
-    }
-    useEffect(() => {
-        getAllFiles();
 
-    }, []);
 
 
     const documentsData = [
@@ -160,12 +148,18 @@ const Tagging = () => {
         setSelectedCSA(selectedOption);
     };
 
-    const handleBarcodeChange = selectedOption => {
-        setSelectedBarcode(selectedOption);
-        setSelectedCSA(selectedOption);
+    const handleCSAInputChange = inputValue => {
+        handleFileSelectFromCSA(inputValue);
+    }
+    const handleBarcodeInputChange = inputValue => {
+        handleFileSelectFromBarcode(inputValue);
     }
 
 
+    const handleBarcodeChange = (selectedOption) => {
+        setSelectedBarcode(selectedOption);
+        setSelectedCSA(selectedOption);
+    };
 
 
     const addPageData = () => {
@@ -217,7 +211,6 @@ const Tagging = () => {
             const document = documentType.name
             const fileDataId = selectedCSA.id;
             setLoader(true);
-            console.log(selectedCSA)
             const data = await createPdfFromImages({ imageNames, document, csa, fileDataId, requestCount });
             setConfirmModal(false);
             setLoader(false);
@@ -276,22 +269,53 @@ const Tagging = () => {
     const [error, setError] = useState('');
 
 
-    const handleSelectBarcode = (barcode) => {
-        // console.log(CSAData)
-        let data = CSAData.filter(item => item.CSA === barcode);
-        console.log("dkfldkdlskd ", data[0]);
-        setSelectedCSA(data[0])
-    }
 
-    const findBarcode = (fileName) => {
-        for (let a of CSAData) {
-            if (a.barcode == fileName) {
-                setSelectedBarcode(a);
-                setSelectedCSA(a);
+
+
+
+    const handleFileSelectFromCSA = async (csa) => {
+        try {
+            const data = await getFileFromCSA({ CSA: csa });
+            if (data?.success) {
+                if (data?.data != null) {
+                    setCSAData([data?.data]);
+                }
             }
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Something went wrong");
         }
     }
 
+    const handleFileSelectFromBarcode = async (barcode) => {
+        try {
+            const data = await getFileFromBarcode({ barcode });
+            if (data?.success) {
+                if (data?.data != null) {
+                    setCSAData([data?.data]);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+            toast.error(error?.response?.data?.message || "Something went wrong");
+        }
+    }
+
+    const handleBaroceSetOnPdfChange = async (barcode) => {
+        try {
+            const data = await getFileFromBarcode({ barcode });
+            if (data?.success) {
+                if (data?.data != null) {
+                    // setCSAData([data?.data]);
+                    console.log(data?.data)
+                    setSelectedBarcode(data?.data);
+                    setSelectedCSA(data?.data);
+                }
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
 
     const handleFileChange = async (e) => {
         setSelectedBarcode("");
@@ -303,7 +327,7 @@ const Tagging = () => {
         if (name) {
 
             let newFilename = name.replace(".pdf", "");
-            findBarcode(newFilename);
+            handleBaroceSetOnPdfChange(newFilename);
         }
 
         const formData = new FormData();
@@ -430,6 +454,7 @@ const Tagging = () => {
 
                                             value={selectedBarcode}
                                             onChange={handleBarcodeChange}
+                                            onInputChange={handleBarcodeInputChange}
                                             options={CSAData}
                                             getOptionLabel={option => option?.barcode}
                                             getOptionValue={option => option?.id?.toString()} // Convert to string if classId is a number
@@ -452,6 +477,7 @@ const Tagging = () => {
 
                                             value={selectedCSA}
                                             onChange={handleSelectCSA}
+                                            onInputChange={handleCSAInputChange}
                                             options={CSAData}
                                             getOptionLabel={option => option?.CSA}
                                             getOptionValue={option => option?.id?.toString()} // Convert to string if classId is a number
